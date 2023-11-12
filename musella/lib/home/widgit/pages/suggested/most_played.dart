@@ -9,14 +9,12 @@ class MostPlayed extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Music> albums = MusicOperations.getMusic();
 
-    // Wrap the Column in a Flexible widget or another widget that provides constraints.
-    return Flexible(
+    return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -36,7 +34,8 @@ class MostPlayed extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
+          SizedBox(
+            height: 200, // Adjust this height based on your content
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: albums.length,
@@ -53,8 +52,7 @@ class MostPlayed extends StatelessWidget {
                           album.imagePath,
                           fit: BoxFit.cover,
                           width: 150,
-                          height:
-                              150, // Give a specific height instead of double.infinity
+                          height: 150,
                         ),
                       ),
                       SizedBox(height: 8),

@@ -9,7 +9,8 @@ class Artists extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<ArtistUser> artists = ArtistUserOperations.getArtistUser();
 
-    return Flexible(
+    // Use SingleChildScrollView for vertical scrolling
+    return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -35,7 +36,8 @@ class Artists extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
+          SizedBox(
+            height: 180, // Adjust this height based on the content
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: artists.length,
