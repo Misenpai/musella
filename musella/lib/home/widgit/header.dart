@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AppHeader extends StatefulWidget {
-  const AppHeader({Key? key}) : super(key: key);
+  final Function(int) onCategorySelected;
+  const AppHeader({Key? key, required this.onCategorySelected})
+      : super(key: key);
 
   @override
   _AppHeaderState createState() => _AppHeaderState();
@@ -65,6 +67,7 @@ class _AppHeaderState extends State<AppHeader> {
           _selectedIndex = index;
           // Handle the button press
         });
+        widget.onCategorySelected(index);
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
