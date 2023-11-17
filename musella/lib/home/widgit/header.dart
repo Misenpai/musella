@@ -10,16 +10,16 @@ class AppHeader extends StatefulWidget {
 }
 
 class _AppHeaderState extends State<AppHeader> {
-  // Current selected index
+
   int _selectedIndex = 0;
 
   final List<String> categories = ['Suggested', 'Songs', 'Artists', 'Albums'];
 
   @override
   Widget build(BuildContext context) {
-    // Get the screen width
+
     double screenWidth = MediaQuery.of(context).size.width;
-    // Calculate the width for each item
+
     double itemWidth = screenWidth / categories.length;
 
     return Column(
@@ -41,12 +41,12 @@ class _AppHeaderState extends State<AppHeader> {
           height: 10,
         ),
         SizedBox(
-          height: 30, // Set the height of the container
+          height: 30, 
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: categories.length,
             itemBuilder: (context, index) => Container(
-              width: itemWidth, // Set the calculated width for each item
+              width: itemWidth, 
               alignment: Alignment.center,
               child: _buildScrollItem(
                 title: categories[index],
@@ -63,10 +63,11 @@ class _AppHeaderState extends State<AppHeader> {
     bool isSelected = index == _selectedIndex;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedIndex = index;
-          // Handle the button press
-        });
+        setState(
+          () {
+            _selectedIndex = index;
+          },
+        );
         widget.onCategorySelected(index);
       },
       child: Column(

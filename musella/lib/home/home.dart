@@ -19,9 +19,11 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   void _onCategorySelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    setState(
+      () {
+        _selectedIndex = index;
+      },
+    );
   }
 
   Widget _buildBody() {

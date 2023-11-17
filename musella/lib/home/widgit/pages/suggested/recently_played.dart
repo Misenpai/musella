@@ -24,7 +24,6 @@ class RecentlyPlayed extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Handle 'See All' press
                   },
                   child: Text(
                     'See All',
@@ -35,7 +34,7 @@ class RecentlyPlayed extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 200, // Adjust this height based on your content
+            height: 200, 
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: albums.length,
