@@ -7,6 +7,7 @@ import 'package:musella/home/widgit/pages/suggested/artist.dart';
 import 'package:musella/home/widgit/pages/suggested/most_played.dart';
 import 'package:musella/home/widgit/pages/suggested/recently_played.dart';
 import 'package:musella/widgit/bottom_navigation.dart';
+import 'package:musella/widgit/miniplayer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -47,16 +48,35 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+   String? currentImageUrl;
+  String? currentTitle;
+  String? currentArtist;
+
+  void handleBackFromMusicPlayer(String url, String title, String artist) {
+    setState(() {
+      currentImageUrl = url;
+      currentTitle = title;
+      currentArtist = artist;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            AppHeader(onCategorySelected: _onCategorySelected),
             Expanded(
-              child: _buildBody(),
+              child: Column(
+                children: [
+                  AppHeader(onCategorySelected: _onCategorySelected),
+                  Expanded(
+                    child: _buildBody(),
+                  ),
+                ],
+              ),
             ),
+            const MiniPlayer(),
           ],
         ),
       ),

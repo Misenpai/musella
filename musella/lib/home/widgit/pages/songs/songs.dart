@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:musella/models/songs_model.dart';
 import 'package:musella/services/songs_model_operations.dart';
+import 'package:musella/widgit/music_player.dart';
 
 class SongsPage extends StatelessWidget {
   const SongsPage({super.key});
@@ -49,15 +50,25 @@ class SongsPage extends StatelessWidget {
                 final song = songs[index];
                 return ListTile(
                   leading: Image.network(song.imageURL),
-                  title: Text(song.title), 
+                  title: Text(song.title),
                   subtitle: Text('${song.artist} | ${song.duration}'),
                   trailing: IconButton(
                     icon: Icon(
                       Icons.play_circle_fill,
                       color: Colors.orange,
                     ),
-                    onPressed: () {},
-                  ), 
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => MusicPlayerPage(
+                            imageURL: song.imageURL,
+                            title: song.title,
+                            artist: song.artist,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             ),
