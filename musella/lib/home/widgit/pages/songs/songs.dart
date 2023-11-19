@@ -4,7 +4,8 @@ import 'package:musella/services/songs_model_operations.dart';
 import 'package:musella/widgit/music_player.dart';
 
 class SongsPage extends StatelessWidget {
-  const SongsPage({super.key});
+  final Function(String, String, String) handleBackFromMusicPlayer;
+  const SongsPage({super.key, required this.handleBackFromMusicPlayer});
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +59,11 @@ class SongsPage extends StatelessWidget {
                       color: Colors.orange,
                     ),
                     onPressed: () {
+                      handleBackFromMusicPlayer(
+                        song.imageURL,
+                        song.title,
+                        song.artist,
+                      );
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => MusicPlayerPage(

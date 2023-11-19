@@ -30,7 +30,9 @@ class _HomePageState extends State<HomePage> {
   Widget _buildBody() {
     switch (_selectedIndex) {
       case 1:
-        return SongsPage();
+        return SongsPage(
+          handleBackFromMusicPlayer: handleBackFromMusicPlayer,
+        );
       case 2:
         return ArtistPage();
       case 3:
@@ -38,17 +40,22 @@ class _HomePageState extends State<HomePage> {
       default:
         return SingleChildScrollView(
           child: Column(
-            children: const [
-              RecentlyPlayed(),
+            children: [
+              RecentlyPlayed(
+                handleBackFromMusicPlayerRecentlyPlayed:
+                    handleBackFromMusicPlayer,
+              ),
               Artists(),
-              MostPlayed(),
+              MostPlayed(
+                handleBackFromMusicPlayerMostPlayed: handleBackFromMusicPlayer,
+              ),
             ],
           ),
         );
     }
   }
 
-   String? currentImageUrl;
+  String? currentImageUrl;
   String? currentTitle;
   String? currentArtist;
 
@@ -76,7 +83,10 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            const MiniPlayer(),
+            MiniPlayer(
+              imageURL: currentImageUrl,
+              title: currentTitle,
+            ),
           ],
         ),
       ),

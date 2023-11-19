@@ -20,9 +20,10 @@ class MusicPlayerPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).pop();
+            }),
       ),
       body: Column(
         children: [
@@ -40,15 +41,13 @@ class MusicPlayerPage extends StatelessWidget {
             style: TextStyle(color: Colors.white54, fontSize: 18),
           ),
           Spacer(),
-          Image.network(imageURL, fit: BoxFit.cover), // Your image widget here
+          Image.network(imageURL, fit: BoxFit.cover),
           Spacer(),
           Slider(
-            value: 0.5, // Current playback time in seconds
+            value: 0.5,
             min: 0,
-            max: 100, // Total song duration in seconds
-            onChanged: (value) {
-              // Update the state to reflect the new position
-            },
+            max: 100,
+            onChanged: (value) {},
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -66,27 +65,20 @@ class MusicPlayerPage extends StatelessWidget {
             children: [
               IconButton(
                 icon: Icon(Icons.skip_previous, color: Colors.white),
-                onPressed: () {
-                  // Logic to skip to the previous song
-                },
+                onPressed: () {},
               ),
               IconButton(
                 icon: Icon(Icons.pause_circle_filled,
                     color: Colors.orange, size: 64),
-                onPressed: () {
-                  // Logic to pause the song
-                },
+                onPressed: () {},
               ),
               IconButton(
                 icon: Icon(Icons.skip_next, color: Colors.white),
-                onPressed: () {
-                  // Logic to skip to the next song
-                },
+                onPressed: () {},
               ),
             ],
           ),
           Spacer(),
-          // Your lyrics button here
           Spacer(),
         ],
       ),

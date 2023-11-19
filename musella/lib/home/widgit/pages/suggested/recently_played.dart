@@ -4,7 +4,12 @@ import 'package:musella/services/music_operations.dart';
 import 'package:musella/widgit/music_player.dart';
 
 class RecentlyPlayed extends StatelessWidget {
-  const RecentlyPlayed({Key? key}) : super(key: key);
+  final Function(String, String, String)
+      handleBackFromMusicPlayerRecentlyPlayed;
+  const RecentlyPlayed({
+    Key? key,
+    required this.handleBackFromMusicPlayerRecentlyPlayed,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +48,11 @@ class RecentlyPlayed extends StatelessWidget {
                 final album = albums[index];
                 return GestureDetector(
                   onTap: () {
+                    handleBackFromMusicPlayerRecentlyPlayed(
+                      album.imagePath,
+                      album.title,
+                      album.artist,
+                    );
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => MusicPlayerPage(
