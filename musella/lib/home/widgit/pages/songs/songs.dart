@@ -3,15 +3,43 @@ import 'package:musella/models/songs_model.dart';
 import 'package:musella/services/songs_model_operations.dart';
 import 'package:musella/widgit/music_player.dart';
 
-class SongsPage extends StatelessWidget {
+class SongsPage extends StatefulWidget {
   final Function(String, String, String) handleBackFromMusicPlayer;
   const SongsPage({super.key, required this.handleBackFromMusicPlayer});
 
   @override
-  Widget build(BuildContext context) {
-    final List<SongsModel> songs = SongsModelOperations.getSongsModel();
-    songs.sort((a, b) => a.title.compareTo(b.title));
+  _SongsPageState createState() => _SongsPageState();
+}
 
+class _SongsPageState extends State<SongsPage> {
+  late List<SongsModel> songs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSongs();
+  }
+
+  Future<void> _loadSongs() async {
+    try {
+      var songsOperations = SongsModelOperations();
+
+      final loadedSongs = await songsOperations
+          .getSongsModel(['Porter Robinson', 'BoyWithUke', 'Powfu']);
+
+      if (mounted) {
+        setState(() {
+          songs = loadedSongs;
+          songs.sort((a, b) => a.title.compareTo(b.title));
+        });
+      }
+    } catch (e) {
+      print('Error loading songs: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
@@ -59,7 +87,7 @@ class SongsPage extends StatelessWidget {
                       color: Colors.orange,
                     ),
                     onPressed: () {
-                      handleBackFromMusicPlayer(
+                      widget.handleBackFromMusicPlayer(
                         song.imageURL,
                         song.title,
                         song.artist,

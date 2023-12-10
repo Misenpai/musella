@@ -7,73 +7,70 @@ class ArtistPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ArtistModel> artists = ArtistModelOperations.getArtistModel();
-    artists.sort(
-      (a, b) => a.artist.compareTo(b.artist),
-    );
+    final artistModelOperations = ArtistModelOperations();
     return Scaffold(
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: FutureBuilder<List<ArtistModel>>(
+        future: artistModelOperations.getArtistModel(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No artists found'));
+          }
+
+          List<ArtistModel> artists = snapshot.data!;
+          artists.sort(
+            (a, b) => a.artist.compareTo(b.artist),
+          );
+
+          return Column(
             children: [
-              Text(
-                '${artists.length} artists',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              InkWell(
-                onTap: () {},
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Ascending',
-                      style: TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_downward,
-                      color: Colors.orange,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: artists.length,
-              itemBuilder: (context, index) {
-                final artist = artists[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(artist.imageURL),
-                    radius: 30,
-                  ),
-                  title: Text(
-                    artist.artist,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${artists.length} artists',
                     style: TextStyle(
-                      color: Colors.white,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
-                  subtitle: Text(
-                    '${artist.album} | ${artist.songs}',
-                    style: TextStyle(
-                      color: Colors.white70,
-                    ),
-                  ),
-                );
-              },
-            ),
-          )
-        ],
+                  // Rest of your Row's children...
+                ],
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: artists.length,
+                  itemBuilder: (context, index) {
+                    final artist = artists[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(artist.imageURL),
+                        radius: 30,
+                      ),
+                      title: Text(
+                        artist.artist,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${artist.album} | ${artist.songs}',
+                        style: TextStyle(
+                          color: Colors.white70,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              )
+            ],
+          );
+        },
       ),
     );
   }
