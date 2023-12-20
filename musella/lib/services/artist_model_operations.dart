@@ -16,39 +16,41 @@ class ArtistModelOperations {
 
   Future<List<ArtistModel>> getArtistModel() async {
     print('Fetching artist data...');
-    List<ArtistModel> artistsList = [];
-
     List<String> artistUris = [
       'spotify:artist:1Cd373x8qzC7SNUg5IToqp',
       'spotify:artist:3hOdow4ZPmrby7Q1wfPLEy',
       'spotify:artist:7EJYadnOoXsnXbvULN7YCR',
     ];
 
+    // Parallelize API calls
+    var artistFetchTasks = artistUris.map((uri) => _fetchArtistData(uri));
+    var artistsData = await Future.wait(artistFetchTasks, eagerError: false);
+
+    // Filter out null values (in case of failed fetches)
+    return artistsData.whereType<ArtistModel>().toList();
+  }
+
+  Future<ArtistModel?> _fetchArtistData(String uri) async {
     try {
-      for (var uri in artistUris) {
-        var artistId = uri.split(':').last; // Extract artist ID from URI
-        var artist = await spotify.artists.get(artistId);
-        var albums = await spotify.artists.albums(artistId).all();
+      var artistId = uri.split(':').last; // Extract artist ID from URI
+      var artist = await spotify.artists.get(artistId);
+      var albums = await spotify.artists.albums(artistId).all();
 
-        String imageURL = artist.images?.first?.url ?? 'default_image_url';
-        String artistName = artist.name ?? 'Unknown Artist';
-        String albumCount = '${albums.length} Albums';
+      String imageURL = artist.images?.first?.url ?? 'default_image_url';
+      String artistName = artist.name ?? 'Unknown Artist';
+      String albumCount = '${albums.length} Albums';
 
-        int totalTracks = 0;
-        for (var album in albums) {
-          var tracks = await spotify.albums.getTracks(album.id ?? 'null').all();
-          totalTracks += tracks.length;
-        }
-        String songsCount = '$totalTracks Songs';
-
-        artistsList
-            .add(ArtistModel(imageURL, artistName, albumCount, songsCount));
+      int totalTracks = 0;
+      for (var album in albums) {
+        var tracks = await spotify.albums.getTracks(album.id ?? 'null').all();
+        totalTracks += tracks.length;
       }
-      print('Artist data fetching complete.');
-    } catch (e, stackTrace) {
-      print('Error fetching artists: $e');
-      print('StackTrace: $stackTrace');
+      String songsCount = '$totalTracks Songs';
+
+      return ArtistModel(imageURL, artistName, albumCount, songsCount);
+    } catch (e) {
+      print('Error fetching artist data for $uri: $e');
+      return null; // Return null in case of an error
     }
-    return artistsList;
   }
 }
