@@ -29,8 +29,12 @@ class SongsModelOperations {
               String title = item.name ?? 'Unknown Title';
               String artist = item.artists?.first?.name ?? 'Unknown';
               String duration = _formatDuration(item.duration ?? Duration.zero);
+              String audioURL =
+                  _extractTrackId(item.uri); // Spotify URI as audio URL
 
-              songs.add(SongsModel(imageURL, title, artist, duration));
+              songs
+                  .add(SongsModel(imageURL, title, artist, duration, audioURL));
+              // print(audioURL);
             }
           }
         }
@@ -47,5 +51,11 @@ class SongsModelOperations {
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     return "$minutes:$seconds";
+  }
+
+  String _extractTrackId(String? uri) {
+    if (uri == null) return 'default_audio_id';
+    var parts = uri.split(':');
+    return parts.length >= 3 ? parts[2] : 'default_audio_id';
   }
 }

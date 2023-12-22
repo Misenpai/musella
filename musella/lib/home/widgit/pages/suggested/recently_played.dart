@@ -48,20 +48,20 @@ class RecentlyPlayed extends StatelessWidget {
                 final album = albums[index];
                 return GestureDetector(
                   onTap: () {
-                    handleBackFromMusicPlayerRecentlyPlayed(
-                      album.imagePath,
-                      album.title,
-                      album.artist,
-                    );
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => MusicPlayerPage(
-                          imageURL: album.imagePath,
-                          title: album.title,
-                          artist: album.artist,
-                        ),
-                      ),
-                    );
+                    // handleBackFromMusicPlayerRecentlyPlayed(
+                    //   album.imagePath,
+                    //   album.title,
+                    //   album.artist,
+                    // );
+                    // Navigator.of(context).push(
+                    //   MaterialPageRoute(
+                    //     builder: (context) => MusicPlayerPage(
+                    //       imageURL: album.imagePath,
+                    //       title: album.title,
+                    //       artist: album.artist,
+                    //     ),
+                    //   ),
+                    // );
                   },
                   child: Padding(
                     padding: EdgeInsets.only(

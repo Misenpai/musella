@@ -3,6 +3,6 @@ class SongsModel {
   String title;
   String artist;
   String duration;
-
-  SongsModel(this.imageURL, this.title, this.artist, this.duration);
+  String audioURL;
+  SongsModel(this.imageURL, this.title, this.artist, this.duration, this.audioURL);
 }

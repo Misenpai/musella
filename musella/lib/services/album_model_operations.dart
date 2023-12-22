@@ -34,7 +34,7 @@ class AlbumModelOperations {
       var album = await spotify.albums.get(albumId);
       var tracks = await spotify.albums.tracks(album.id!).all();
 
-      String imageURL = album.images?.first?.url ?? 'default_image_url';
+      String imageURL = album.images?.first.url ?? 'default_image_url';
       String albumTitle = album.name ?? 'no album name';
       String artistName = album.artists?.first.name ?? 'no name';
       String year = album.releaseDate == null

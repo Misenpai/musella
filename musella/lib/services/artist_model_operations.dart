@@ -5,52 +5,70 @@ class ArtistModelOperations {
   late SpotifyApi spotify;
 
   ArtistModelOperations() {
-    var keyMap = {
-      "id": "4c6480b9dad641e0949b71b13d0ca7c0",
-      "secret": "d07d2808092846ae9a452961db39b7f2"
-    };
-
-    var credentials = SpotifyApiCredentials(keyMap['id'], keyMap['secret']);
+    var credentials = SpotifyApiCredentials(
+        "4c6480b9dad641e0949b71b13d0ca7c0", "d07d2808092846ae9a452961db39b7f2");
     spotify = SpotifyApi(credentials);
   }
 
-  Future<List<ArtistModel>> getArtistModel() async {
-    print('Fetching artist data...');
-    List<String> artistUris = [
-      'spotify:artist:1Cd373x8qzC7SNUg5IToqp',
-      'spotify:artist:3hOdow4ZPmrby7Q1wfPLEy',
-      'spotify:artist:7EJYadnOoXsnXbvULN7YCR',
-    ];
+  Future<List<ArtistModel>> getArtistModel(List<String> artistNames) async {
+    List<ArtistModel> artists = [];
 
-    // Parallelize API calls
-    var artistFetchTasks = artistUris.map((uri) => _fetchArtistData(uri));
-    var artistsData = await Future.wait(artistFetchTasks, eagerError: false);
+    try {
+      for (var artistName in artistNames) {
+        await _handleRateLimit(() async {
+          var searchResults = await spotify.search.get(artistName).first(1);
+          print('Searching for $artistName');
 
-    // Filter out null values (in case of failed fetches)
-    return artistsData.whereType<ArtistModel>().toList();
+          for (var page in searchResults) {
+            for (var item in page.items!) {
+              if (item is Artist && item.id != null) {
+                print('Found artist: ${item.name}');
+
+                var albums = await spotify.artists.albums(item.id!).all();
+                int albumCount = albums.length;
+                int trackCount = 0;
+
+                for (var album in albums) {
+                  if (album.id != null) {
+                    var tracks = await spotify.albums.tracks(album.id!).all();
+                    trackCount += tracks.length;
+                  }
+                }
+
+                String imageURL = item.images?.first.url ?? 'default_image_url';
+                String artist = item.name ?? 'Unknown Artist';
+
+                artists.add(ArtistModel(imageURL, '$albumCount Albums', artist,
+                    '$trackCount Songs'));
+              }
+            }
+          }
+        });
+      }
+    } catch (e) {
+      print('Error fetching artists: $e');
+    }
+
+    return artists;
   }
 
-  Future<ArtistModel?> _fetchArtistData(String uri) async {
-    try {
-      var artistId = uri.split(':').last; // Extract artist ID from URI
-      var artist = await spotify.artists.get(artistId);
-      var albums = await spotify.artists.albums(artistId).all();
+  Future<void> _handleRateLimit(Future<void> Function() apiCall,
+      {int maxRetries = 3}) async {
+    int retries = 0;
+    int delaySeconds = 1; // Start with a 1-second delay
 
-      String imageURL = artist.images?.first?.url ?? 'default_image_url';
-      String artistName = artist.name ?? 'Unknown Artist';
-      String albumCount = '${albums.length} Albums';
-
-      int totalTracks = 0;
-      for (var album in albums) {
-        var tracks = await spotify.albums.getTracks(album.id ?? 'null').all();
-        totalTracks += tracks.length;
+    while (retries < maxRetries) {
+      try {
+        await apiCall();
+        return;
+      } catch (e) {
+        if (retries < maxRetries - 1) {
+          // Don't wait on the last retry
+          await Future.delayed(Duration(seconds: delaySeconds));
+          delaySeconds *= 2; // Double the delay for each retry
+        }
+        retries++;
       }
-      String songsCount = '$totalTracks Songs';
-
-      return ArtistModel(imageURL, artistName, albumCount, songsCount);
-    } catch (e) {
-      print('Error fetching artist data for $uri: $e');
-      return null; // Return null in case of an error
     }
   }
 }

@@ -24,8 +24,8 @@ class _SongsPageState extends State<SongsPage> {
     try {
       var songsOperations = SongsModelOperations();
 
-      final loadedSongs = await songsOperations
-          .getSongsModel(['Porter Robinson', 'BoyWithUke', 'Powfu']);
+      final loadedSongs = await songsOperations.getSongsModel(
+          ['Porter Robinson', 'BoyWithUke', 'Powfu', 'David Kushner']);
 
       if (mounted) {
         setState(() {
@@ -98,6 +98,7 @@ class _SongsPageState extends State<SongsPage> {
                             imageURL: song.imageURL,
                             title: song.title,
                             artist: song.artist,
+                            audioURL: song.audioURL,
                           ),
                         ),
                       );
