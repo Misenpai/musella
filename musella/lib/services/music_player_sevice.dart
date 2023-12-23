@@ -17,14 +17,19 @@ class MusicPlayerService with ChangeNotifier {
     }
   }
 
-  void togglePlayPause() {
+  Future<void> togglePlayPause() async {
     if (isPlaying) {
-      player.pause();
+      await player.pause();
     } else {
-      player.resume();
+      await player.resume();
     }
     notifyListeners();
   }
 
   // Add other methods and listeners as needed
+
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
 }

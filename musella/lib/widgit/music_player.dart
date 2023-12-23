@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -27,17 +29,27 @@ class MusicPlayerPage extends StatefulWidget {
 }
 
 class _MusicPlayerPageState extends State<MusicPlayerPage> {
-  bool _isPlaying = false;
   late final player = AudioPlayer();
   Duration? duration;
   Duration _postion = Duration.zero;
+  late final StreamSubscription _playerStateChangedSubscription;
+  late MusicPlayerService musicPlayerService;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    musicPlayerService =
+        Provider.of<MusicPlayerService>(context, listen: false);
+  }
 
   @override
   void initState() {
     super.initState();
     final musicPlayerService =
         Provider.of<MusicPlayerService>(context, listen: false);
-    musicPlayerService.player.onPlayerStateChanged.listen((state) {
+
+    _playerStateChangedSubscription =
+        musicPlayerService.player.onPlayerStateChanged.listen((state) {
       setState(() {});
     });
     print(widget.audioURL);
@@ -64,6 +76,13 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _playerStateChangedSubscription.cancel();
+    // Do not stop or dispose of the player to allow playback in the background
+    super.dispose();
   }
 
   @override

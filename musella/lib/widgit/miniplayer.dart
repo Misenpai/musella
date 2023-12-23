@@ -43,7 +43,11 @@ class MiniPlayer extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () => musicPlayerService.togglePlayPause(),
+            onPressed: () {
+              print("Before togglePlayPause");
+              musicPlayerService.togglePlayPause();
+              print("After togglePlayPause");
+            },
             icon: Icon(
               musicPlayerService.isPlaying ? Icons.pause : Icons.play_arrow,
               color: Colors.white,

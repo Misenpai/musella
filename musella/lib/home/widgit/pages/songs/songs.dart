@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:musella/models/songs_model.dart';
+import 'package:musella/services/music_player_sevice.dart';
 import 'package:musella/services/songs_model_operations.dart';
 import 'package:musella/widgit/music_player.dart';
+import 'package:provider/provider.dart';
 
 class SongsPage extends StatefulWidget {
   final Function(String, String, String) handleBackFromMusicPlayer;
+
   const SongsPage({super.key, required this.handleBackFromMusicPlayer});
 
   @override
@@ -36,6 +39,14 @@ class _SongsPageState extends State<SongsPage> {
     } catch (e) {
       print('Error loading songs: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    final musicPlayerService =
+        Provider.of<MusicPlayerService>(context, listen: false);
+    musicPlayerService.player.pause(); // Pause the player when navigating back
+    super.dispose();
   }
 
   @override
