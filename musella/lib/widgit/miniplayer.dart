@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:musella/services/music_player_sevice.dart';
+import 'package:provider/provider.dart';
 
 class MiniPlayer extends StatelessWidget {
   final String? imageURL;
@@ -16,6 +18,9 @@ class MiniPlayer extends StatelessWidget {
       return SizedBox.shrink();
     }
     Size deviceSize = MediaQuery.of(context).size;
+    MusicPlayerService musicPlayerService =
+        Provider.of<MusicPlayerService>(context);
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 500),
       color: Colors.orange,
@@ -38,11 +43,9 @@ class MiniPlayer extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {
-              // TODO: Add play button functionality
-            },
-            icon: const Icon(
-              Icons.play_arrow,
+            onPressed: () => musicPlayerService.togglePlayPause(),
+            icon: Icon(
+              musicPlayerService.isPlaying ? Icons.pause : Icons.play_arrow,
               color: Colors.white,
             ),
           ),

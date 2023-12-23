@@ -1,6 +1,9 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:musella/services/music_player_sevice.dart';
+import 'package:musella/widgit/miniplayer.dart';
+import 'package:provider/provider.dart';
 // ignore: library_prefixes
 import 'package:spotify/spotify.dart' as Spotify;
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -31,6 +34,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
 
   @override
   void initState() {
+    super.initState();
+    final musicPlayerService =
+        Provider.of<MusicPlayerService>(context, listen: false);
+    musicPlayerService.player.onPlayerStateChanged.listen((state) {
+      setState(() {});
+    });
     print(widget.audioURL);
     final credentials = Spotify.SpotifyApiCredentials(
         "4c6480b9dad641e0949b71b13d0ca7c0", "d07d2808092846ae9a452961db39b7f2");
@@ -46,20 +55,20 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
         setState(() {});
         var manifest = await yt.videos.streamsClient.getManifest(videoId);
         var audioId = manifest.audioOnly.first.url;
-        player.play(UrlSource(audioId.toString()));
-        player.onPositionChanged.listen((postion) {
+        print(audioId);
+        musicPlayerService.play(audioId.toString());
+        musicPlayerService.player.onPositionChanged.listen((postion) {
           setState(() {
             _postion = postion;
           });
         });
       }
     });
-    super.initState();
-    // You can start playing the audio here if needed
   }
 
   @override
   Widget build(BuildContext context) {
+    final musicPlayerService = Provider.of<MusicPlayerService>(context);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -92,13 +101,13 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
           Image.network(widget.imageURL, fit: BoxFit.cover),
           Spacer(),
           StreamBuilder(
-              stream: player.onPlayerStateChanged,
+              stream: musicPlayerService.player.onPlayerStateChanged,
               builder: (context, snapshot) {
                 return ProgressBar(
                   progress: _postion,
                   total: duration ?? const Duration(minutes: 4),
                   onSeek: (duration) {
-                    player.seek(duration);
+                    musicPlayerService.player.seek(duration);
                   },
                   timeLabelTextStyle: TextStyle(color: Colors.white),
                   thumbColor: Colors.white,
@@ -117,22 +126,20 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
                   // Implement skipping to the previous song if needed
                 },
               ),
-              IconButton(
-                  icon: Icon(
-                    player.state == PlayerState.playing
-                        ? Icons.pause_circle_filled
-                        : Icons.play_circle_fill,
-                    color: Colors.orange,
-                    size: 64,
-                  ),
-                  onPressed: () async {
-                    if (player.state == PlayerState.playing) {
-                      await player.pause();
-                    } else {
-                      await player.resume();
-                    }
-                    setState(() {});
-                  }),
+              Consumer<MusicPlayerService>(
+                  builder: (context, musicPlayerService, child) {
+                return IconButton(
+                    icon: Icon(
+                      musicPlayerService.isPlaying
+                          ? Icons.pause_circle_filled
+                          : Icons.play_circle_fill,
+                      color: Colors.orange,
+                      size: 64,
+                    ),
+                    onPressed: () {
+                      context.read<MusicPlayerService>().togglePlayPause();
+                    });
+              }),
               IconButton(
                 icon: Icon(Icons.skip_next, color: Colors.white),
                 onPressed: () {

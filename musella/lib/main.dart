@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:musella/home/home.dart';
+import 'package:musella/services/music_player_sevice.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => MusicPlayerService(),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
