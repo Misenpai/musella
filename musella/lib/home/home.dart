@@ -14,60 +14,52 @@ class HomePage extends StatefulWidget {
 
   @override
   _HomePageState createState() => _HomePageState();
-  static final GlobalKey<_HomePageState> homePageKey =
-      GlobalKey<_HomePageState>();
 }
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  void _onCategorySelected(int index) {
-    setState(
-      () {
-        _selectedIndex = index;
-      },
-    );
-  }
-
-  Widget _buildBody() {
-    switch (_selectedIndex) {
-      case 1:
-        return SongsPage(
-          handleBackFromMusicPlayer: handleBackFromMusicPlayer,
-        );
-      case 2:
-        return ArtistPage();
-      case 3:
-      // return AlbumPage();
-      default:
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              RecentlyPlayed(
-                handleBackFromMusicPlayerRecentlyPlayed:
-                    handleBackFromMusicPlayer,
-              ),
-              Artists(),
-              MostPlayed(
-                handleBackFromMusicPlayerMostPlayed: handleBackFromMusicPlayer,
-              ),
-            ],
-          ),
-        );
-    }
-  }
-
   String? currentImageUrl;
   String? currentTitle;
   String? currentArtist;
+
+  void _onCategorySelected(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   void handleBackFromMusicPlayer(String url, String title, String artist) {
     setState(() {
       currentImageUrl = url;
       currentTitle = title;
       currentArtist = artist;
-      
     });
+  }
+
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 1:
+        return SongsPage(handleBackFromMusicPlayer: handleBackFromMusicPlayer);
+      case 2:
+        return ArtistPage(
+            handleBackFromArtistSongPlayer: handleBackFromMusicPlayer);
+      // Add other cases for different pages
+      default:
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              RecentlyPlayed(
+                  handleBackFromMusicPlayerRecentlyPlayed:
+                      handleBackFromMusicPlayer),
+              Artists(),
+              MostPlayed(
+                  handleBackFromMusicPlayerMostPlayed:
+                      handleBackFromMusicPlayer),
+            ],
+          ),
+        );
+    }
   }
 
   @override
@@ -80,9 +72,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   AppHeader(onCategorySelected: _onCategorySelected),
-                  Expanded(
-                    child: _buildBody(),
-                  ),
+                  Expanded(child: _buildBody()),
                 ],
               ),
             ),

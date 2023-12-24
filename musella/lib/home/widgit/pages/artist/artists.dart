@@ -4,7 +4,9 @@ import 'package:musella/services/artist_model_operations.dart';
 import 'artist_song.dart'; // Import the artist_song.dart file
 
 class ArtistPage extends StatefulWidget {
-  const ArtistPage({Key? key}) : super(key: key);
+  final Function(String, String, String) handleBackFromArtistSongPlayer;
+
+  const ArtistPage({Key? key, required this.handleBackFromArtistSongPlayer}) : super(key: key);
 
   @override
   _ArtistPageState createState() => _ArtistPageState();
@@ -47,17 +49,14 @@ class _ArtistPageState extends State<ArtistPage> {
     });
   }
 
-  void dummyHandleBackFromArtistSongPlayer(
-      String url, String title, String artist) {
-    // Dummy function for demonstration
-  }
+  
 
-  // Inside _ArtistPageState class
   void navigateToArtistSongPage(String artistName) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ArtistSongPage(
           artistName: artistName,
+          handleBackFromArtistSongPlayer: widget.handleBackFromArtistSongPlayer,
         ),
       ),
     );

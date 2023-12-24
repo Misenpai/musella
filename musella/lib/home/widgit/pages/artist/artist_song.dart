@@ -8,8 +8,13 @@ import 'package:provider/provider.dart';
 
 class ArtistSongPage extends StatefulWidget {
   final String artistName;
+  final Function(String, String, String) handleBackFromArtistSongPlayer;
 
-  const ArtistSongPage({Key? key, required this.artistName}) : super(key: key);
+  const ArtistSongPage(
+      {Key? key,
+      required this.artistName,
+      required this.handleBackFromArtistSongPlayer})
+      : super(key: key);
 
   @override
   _ArtistSongPageState createState() => _ArtistSongPageState();
@@ -57,17 +62,14 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
             title: Text(song.title),
             subtitle: Text('${song.artist} | ${song.duration}'),
             trailing: IconButton(
-              icon: Icon(
-                Icons.play_circle_fill,
-                color: Colors.orange,
-              ),
+              icon: Icon(Icons.play_circle_fill, color: Colors.orange),
               onPressed: () {
-                // Call the callback function to pass information to HomePage
-                final homePageState = HomePage.homePageKey.currentState;
-                homePageState?.handleBackFromMusicPlayer(
-                    song.imageURL, song.title, song.artist);
-
-                // Navigate to MusicPlayerPage
+                widget.handleBackFromArtistSongPlayer(
+                  song.imageURL,
+                  song.title,
+                  song.artist,
+                );
+                // Navigate to MusicPlayerPage if needed
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => MusicPlayerPage(
