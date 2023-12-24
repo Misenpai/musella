@@ -2,42 +2,80 @@ import 'package:flutter/material.dart';
 import 'package:musella/models/artist_model.dart';
 import 'package:musella/services/artist_model_operations.dart'; // Replace with the correct path
 
-class ArtistPage extends StatelessWidget {
+class ArtistPage extends StatefulWidget {
   const ArtistPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final List<String> artistNames = [
-      'Porter Robinson',
-      'BoyWithUke',
-      'Madeon',
-      'Lauv',
-      'Powfu',
-      'Aries'
-    ];
+  _ArtistPageState createState() => _ArtistPageState();
+}
+
+class _ArtistPageState extends State<ArtistPage> {
+  late List<ArtistModel> allArtists;
+  late List<ArtistModel> displayedArtists;
+
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Initially, the artist list is empty
+    allArtists = [];
+    displayedArtists = allArtists;
+  }
+
+  void filterArtists(String query) {
+    setState(() {
+      displayedArtists = allArtists
+          .where((artist) =>
+              artist.artist.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  Future<void> fetchArtists(List<String> artistNames) async {
     final ArtistModelOperations artistOperations = ArtistModelOperations();
+    final List<ArtistModel> artists =
+        await artistOperations.getArtistModel(artistNames);
 
-    return FutureBuilder<List<ArtistModel>>(
-      future: artistOperations.getArtistModel(artistNames),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Omitted the CircularProgressIndicator
-          return Container();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text('No data available.');
-        } else {
-          List<ArtistModel> artists = snapshot.data!;
-          artists.sort((a, b) => a.artist.compareTo(b.artist));
+    setState(() {
+      allArtists = artists;
+      displayedArtists = allArtists;
+    });
+  }
 
-          return Column(
-            children: [
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Unfocus the text field to dismiss the keyboard
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+              child: TextField(
+                controller: searchController,
+                onChanged: (query) {
+                  filterArtists(query);
+                  fetchArtists([query]);
+                },
+                decoration: InputDecoration(
+                  labelText: 'Search Artists',
+                  hintText: 'Enter artist name',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            if (displayedArtists.isNotEmpty)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${artists.length} artists',
+                    '${displayedArtists.length} artists',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -65,17 +103,16 @@ class ArtistPage extends StatelessWidget {
                   ),
                 ],
               ),
+            if (displayedArtists.isNotEmpty)
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0), // Adjust the value as needed
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListView.builder(
-                    itemCount: artists.length,
+                    itemCount: displayedArtists.length,
                     itemBuilder: (context, index) {
-                      final artist = artists[index];
+                      final artist = displayedArtists[index];
                       return Container(
-                        margin: EdgeInsets.only(
-                            bottom: 15.0), // Adjust the value as needed
+                        margin: EdgeInsets.only(bottom: 15.0),
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundImage: NetworkImage(artist.imageURL),
@@ -95,10 +132,9 @@ class ArtistPage extends StatelessWidget {
                   ),
                 ),
               ),
-            ],
-          );
-        }
-      },
+          ],
+        ),
+      ),
     );
   }
 }
