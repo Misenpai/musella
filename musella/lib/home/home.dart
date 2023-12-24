@@ -14,6 +14,8 @@ class HomePage extends StatefulWidget {
 
   @override
   _HomePageState createState() => _HomePageState();
+  static final GlobalKey<_HomePageState> homePageKey =
+      GlobalKey<_HomePageState>();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -36,7 +38,7 @@ class _HomePageState extends State<HomePage> {
       case 2:
         return ArtistPage();
       case 3:
-        // return AlbumPage();
+      // return AlbumPage();
       default:
         return SingleChildScrollView(
           child: Column(
@@ -64,6 +66,7 @@ class _HomePageState extends State<HomePage> {
       currentImageUrl = url;
       currentTitle = title;
       currentArtist = artist;
+      
     });
   }
 

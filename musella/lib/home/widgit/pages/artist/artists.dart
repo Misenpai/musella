@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:musella/models/artist_model.dart';
-import 'package:musella/services/artist_model_operations.dart'; // Replace with the correct path
+import 'package:musella/services/artist_model_operations.dart';
+import 'artist_song.dart'; // Import the artist_song.dart file
 
 class ArtistPage extends StatefulWidget {
   const ArtistPage({Key? key}) : super(key: key);
@@ -18,17 +19,20 @@ class _ArtistPageState extends State<ArtistPage> {
   @override
   void initState() {
     super.initState();
-    // Initially, the artist list is empty
     allArtists = [];
     displayedArtists = allArtists;
   }
 
   void filterArtists(String query) {
     setState(() {
-      displayedArtists = allArtists
-          .where((artist) =>
-              artist.artist.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      if (query.isEmpty) {
+        displayedArtists = allArtists;
+      } else {
+        displayedArtists = allArtists
+            .where((artist) =>
+                artist.artist.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
     });
   }
 
@@ -39,15 +43,30 @@ class _ArtistPageState extends State<ArtistPage> {
 
     setState(() {
       allArtists = artists;
-      displayedArtists = allArtists;
+      filterArtists(searchController.text);
     });
+  }
+
+  void dummyHandleBackFromArtistSongPlayer(
+      String url, String title, String artist) {
+    // Dummy function for demonstration
+  }
+
+  // Inside _ArtistPageState class
+  void navigateToArtistSongPage(String artistName) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ArtistSongPage(
+          artistName: artistName,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Unfocus the text field to dismiss the keyboard
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
@@ -111,19 +130,24 @@ class _ArtistPageState extends State<ArtistPage> {
                     itemCount: displayedArtists.length,
                     itemBuilder: (context, index) {
                       final artist = displayedArtists[index];
-                      return Container(
-                        margin: EdgeInsets.only(bottom: 15.0),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(artist.imageURL),
-                            radius: 30,
-                          ),
-                          title: Text(
-                            artist.artist,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                      return InkWell(
+                        onTap: () {
+                          navigateToArtistSongPage(artist.artist);
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: 15.0),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(artist.imageURL),
+                              radius: 30,
+                            ),
+                            title: Text(
+                              artist.artist,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
                           ),
                         ),
