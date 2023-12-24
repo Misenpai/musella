@@ -66,30 +66,33 @@ class ArtistPage extends StatelessWidget {
                 ],
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: artists.length,
-                  itemBuilder: (context, index) {
-                    final artist = artists[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(artist.imageURL),
-                        radius: 30,
-                      ),
-                      title: Text(
-                        artist.artist,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0), // Adjust the value as needed
+                  child: ListView.builder(
+                    itemCount: artists.length,
+                    itemBuilder: (context, index) {
+                      final artist = artists[index];
+                      return Container(
+                        margin: EdgeInsets.only(
+                            bottom: 15.0), // Adjust the value as needed
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(artist.imageURL),
+                            radius: 30,
+                          ),
+                          title: Text(
+                            artist.artist,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
-                      ),
-                      subtitle: Text(
-                        '${artist.album} | ${artist.songs}',
-                        style: TextStyle(
-                          color: Colors.white70,
-                        ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ],

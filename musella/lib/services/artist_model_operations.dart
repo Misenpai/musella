@@ -24,22 +24,13 @@ class ArtistModelOperations {
               if (item is Artist && item.id != null) {
                 print('Found artist: ${item.name}');
 
-                var albums = await spotify.artists.albums(item.id!).all();
-                int albumCount = albums.length;
-                int trackCount = 0;
-
-                for (var album in albums) {
-                  if (album.id != null) {
-                    var tracks = await spotify.albums.tracks(album.id!).all();
-                    trackCount += tracks.length;
-                  }
-                }
-
                 String imageURL = item.images?.first.url ?? 'default_image_url';
                 String artist = item.name ?? 'Unknown Artist';
 
-                artists.add(ArtistModel(imageURL, '$albumCount Albums', artist,
-                    '$trackCount Songs'));
+                artists.add(ArtistModel(
+                  imageURL,
+                  artist,
+                ));
               }
             }
           }

@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
           handleBackFromMusicPlayer: handleBackFromMusicPlayer,
         );
       case 2:
-        // return ArtistPage();
+        return ArtistPage();
       case 3:
         // return AlbumPage();
       default:
