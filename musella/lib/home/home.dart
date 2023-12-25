@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:musella/home/widgit/header.dart';
-import 'package:musella/home/widgit/pages/album/album.dart';
 import 'package:musella/home/widgit/pages/artist/artists.dart';
 import 'package:musella/home/widgit/pages/songs/songs.dart';
 import 'package:musella/home/widgit/pages/suggested/artist.dart';
@@ -44,7 +43,6 @@ class _HomePageState extends State<HomePage> {
       case 2:
         return ArtistPage(
             handleBackFromArtistSongPlayer: handleBackFromMusicPlayer);
-      // Add other cases for different pages
       default:
         return SingleChildScrollView(
           child: Column(

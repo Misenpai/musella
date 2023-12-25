@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:musella/home/home.dart';
+
 import 'package:musella/models/songs_model.dart';
-import 'package:musella/services/music_player_sevice.dart';
+
 import 'package:musella/services/songs_model_operations.dart';
 import 'package:musella/widgit/music_player.dart';
-import 'package:provider/provider.dart';
+
 
 class ArtistSongPage extends StatefulWidget {
   final String artistName;

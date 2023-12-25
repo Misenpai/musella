@@ -25,14 +25,15 @@ class SongsModelOperations {
           for (var item in page.items!) {
             if (item is Track) {
               String imageURL =
-                  item.album?.images?.first?.url ?? 'default_image_url';
+                  item.album?.images?.first.url ?? 'default_image_url';
               String title = item.name ?? 'Unknown Title';
-              String artist = item.artists?.first?.name ?? 'Unknown';
+              String artist = item.artists?.first.name ?? 'Unknown';
               String duration = _formatDuration(item.duration ?? Duration.zero);
               String audioURL =
                   _extractTrackId(item.uri); // Spotify URI as audio URL
 
-              songs.add(SongsModel(imageURL, title, artist, duration, audioURL));
+              songs
+                  .add(SongsModel(imageURL, title, artist, duration, audioURL));
             }
           }
         }

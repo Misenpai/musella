@@ -7,6 +7,10 @@ class MusicOperations {
       String imageURL, String title, String artist, String audioURL) {
     final music = Music(imageURL, title, artist, audioURL);
 
+    if (_musicList.length >= 7) {
+      _musicList.removeLast();
+    }
+
     _musicList.insert(0, music);
   }
 

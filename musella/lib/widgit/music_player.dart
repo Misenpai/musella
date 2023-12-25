@@ -5,9 +5,8 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:musella/services/music_operations.dart';
 import 'package:musella/services/music_player_sevice.dart';
-import 'package:musella/widgit/miniplayer.dart';
+
 import 'package:provider/provider.dart';
-// ignore: library_prefixes
 import 'package:spotify/spotify.dart' as Spotify;
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
