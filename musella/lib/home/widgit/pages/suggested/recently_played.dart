@@ -13,7 +13,7 @@ class RecentlyPlayed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Music> albums = MusicOperations.getMusic();
+    final List<Music> albums = MusicOperations.getMusicList();
 
     return SingleChildScrollView(
       child: Column(
@@ -48,20 +48,21 @@ class RecentlyPlayed extends StatelessWidget {
                 final album = albums[index];
                 return GestureDetector(
                   onTap: () {
-                    // handleBackFromMusicPlayerRecentlyPlayed(
-                    //   album.imagePath,
-                    //   album.title,
-                    //   album.artist,
-                    // );
-                    // Navigator.of(context).push(
-                    //   MaterialPageRoute(
-                    //     builder: (context) => MusicPlayerPage(
-                    //       imageURL: album.imagePath,
-                    //       title: album.title,
-                    //       artist: album.artist,
-                    //     ),
-                    //   ),
-                    // );
+                    handleBackFromMusicPlayerRecentlyPlayed(
+                      album.imagePath,
+                      album.title,
+                      album.artist,
+                    );
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MusicPlayerPage(
+                          imageURL: album.imagePath,
+                          title: album.title,
+                          artist: album.artist,
+                          audioURL: album.audioURL,
+                        ),
+                      ),
+                    );
                   },
                   child: Padding(
                     padding: EdgeInsets.only(

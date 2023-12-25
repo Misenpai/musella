@@ -10,7 +10,7 @@ class MostPlayed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Music> albums = MusicOperations.getMusic();
+    final List<Music> albums = MusicOperations.getMusicList();
 
     return SingleChildScrollView(
       child: Column(

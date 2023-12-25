@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:musella/services/music_operations.dart';
 import 'package:musella/services/music_player_sevice.dart';
 import 'package:musella/widgit/miniplayer.dart';
 import 'package:provider/provider.dart';
@@ -76,6 +77,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
         });
       }
     });
+    MusicOperations.addMusic(
+      widget.imageURL,
+      widget.title,
+      widget.artist,
+      widget.audioURL,
+    );
   }
 
   @override

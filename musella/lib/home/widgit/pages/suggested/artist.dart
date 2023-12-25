@@ -9,7 +9,6 @@ class Artists extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<ArtistUser> artists = ArtistUserOperations.getArtistUser();
 
-
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,12 +20,11 @@ class Artists extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Artists',
+                  'Recent Artists',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   child: Text(
                     'See All',
                     style: TextStyle(color: Colors.orange),
@@ -36,7 +34,7 @@ class Artists extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 180, 
+            height: 180,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: artists.length,

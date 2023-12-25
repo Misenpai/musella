@@ -2,5 +2,6 @@ class Music {
   String imagePath;
   String title;
   String artist;
-  Music(this.imagePath,this.title,this.artist);
+  String audioURL;
+  Music(this.imagePath, this.title, this.artist,this.audioURL);
 }
