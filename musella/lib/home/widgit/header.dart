@@ -1,9 +1,10 @@
+
+
 import 'package:flutter/material.dart';
 
 class AppHeader extends StatefulWidget {
   final Function(int) onCategorySelected;
-  const AppHeader({Key? key, required this.onCategorySelected})
-      : super(key: key);
+  const AppHeader({super.key, required this.onCategorySelected});
 
   @override
   _AppHeaderState createState() => _AppHeaderState();

@@ -3,7 +3,7 @@ import 'package:musella/models/artist_user.dart';
 import 'package:musella/services/artist_user_operations.dart';
 
 class Artists extends StatelessWidget {
-  const Artists({Key? key}) : super(key: key);
+  const Artists({super.key});
 
   @override
   Widget build(BuildContext context) {

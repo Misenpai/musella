@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-
 import 'package:musella/models/songs_model.dart';
-
 import 'package:musella/services/songs_model_operations.dart';
 import 'package:musella/widgit/music_player.dart';
-
 
 class ArtistSongPage extends StatefulWidget {
   final String artistName;
   final Function(String, String, String) handleBackFromArtistSongPlayer;
 
-  const ArtistSongPage(
-      {Key? key,
-      required this.artistName,
-      required this.handleBackFromArtistSongPlayer})
-      : super(key: key);
+  const ArtistSongPage({
+    super.key,
+    required this.artistName,
+    required this.handleBackFromArtistSongPlayer,
+  });
 
   @override
   _ArtistSongPageState createState() => _ArtistSongPageState();
@@ -22,6 +19,7 @@ class ArtistSongPage extends StatefulWidget {
 
 class _ArtistSongPageState extends State<ArtistSongPage> {
   late List<SongsModel> songs;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -40,10 +38,13 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
         setState(() {
           songs = loadedSongs;
           songs.sort((a, b) => a.title.compareTo(b.title));
+          isLoading = false; // Set loading to false once songs are loaded
         });
       }
     } catch (e) {
-      print('Error loading songs: $e');
+      setState(() {
+        isLoading = false; // Set loading to false in case of an error
+      });
     }
   }
 
@@ -51,40 +52,46 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${songs.length} Songs'),
+        title: isLoading
+            ? Text('Loading Songs...')
+            : Text('${songs.length} Songs'),
       ),
-      body: ListView.builder(
-        itemCount: songs.length,
-        itemBuilder: (context, index) {
-          final song = songs[index];
-          return ListTile(
-            leading: Image.network(song.imageURL),
-            title: Text(song.title),
-            subtitle: Text('${song.artist} | ${song.duration}'),
-            trailing: IconButton(
-              icon: Icon(Icons.play_circle_fill, color: Colors.orange),
-              onPressed: () {
-                widget.handleBackFromArtistSongPlayer(
-                  song.imageURL,
-                  song.title,
-                  song.artist,
-                );
-                // Navigate to MusicPlayerPage if needed
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => MusicPlayerPage(
-                      imageURL: song.imageURL,
-                      title: song.title,
-                      artist: song.artist,
-                      audioURL: song.audioURL,
-                    ),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(
+              itemCount: songs.length,
+              itemBuilder: (context, index) {
+                final song = songs[index];
+                return ListTile(
+                  leading: Image.network(song.imageURL),
+                  title: Text(song.title),
+                  subtitle: Text('${song.artist} | ${song.duration}'),
+                  trailing: IconButton(
+                    icon: Icon(Icons.play_circle_fill, color: Colors.orange),
+                    onPressed: () {
+                      widget.handleBackFromArtistSongPlayer(
+                        song.imageURL,
+                        song.title,
+                        song.artist,
+                      );
+                      // Navigate to MusicPlayerPage if needed
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => MusicPlayerPage(
+                            imageURL: song.imageURL,
+                            title: song.title,
+                            artist: song.artist,
+                            audioURL: song.audioURL,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
             ),
-          );
-        },
-      ),
     );
   }
 }

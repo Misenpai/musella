@@ -14,7 +14,7 @@ class MusicOperations {
     _musicList.insert(0, music);
   }
 
-  static List<Music> _musicList = [];
+  static final List<Music> _musicList = [];
 
   static List<Music> getMusicList() {
     List<Music> result = [];

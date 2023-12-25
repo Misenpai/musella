@@ -1,9 +1,12 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:musella/widgit/bottom_navigation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutMePage extends StatelessWidget {
-  // Function to open a URL in the web browser
+  const AboutMePage({super.key});
+
   Future<void> _launchURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);

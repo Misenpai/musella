@@ -7,9 +7,9 @@ class RecentlyPlayed extends StatelessWidget {
   final Function(String, String, String)
       handleBackFromMusicPlayerRecentlyPlayed;
   const RecentlyPlayed({
-    Key? key,
+    super.key,
     required this.handleBackFromMusicPlayerRecentlyPlayed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

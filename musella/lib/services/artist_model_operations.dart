@@ -1,3 +1,5 @@
+
+
 import 'package:musella/models/artist_model.dart';
 import 'package:spotify/spotify.dart';
 
@@ -17,13 +19,10 @@ class ArtistModelOperations {
       for (var artistName in artistNames) {
         await _handleRateLimit(() async {
           var searchResults = await spotify.search.get(artistName).first(1);
-          print('Searching for $artistName');
 
           for (var page in searchResults) {
             for (var item in page.items!) {
               if (item is Artist && item.id != null) {
-                print('Found artist: ${item.name}');
-
                 String imageURL = item.images?.first.url ?? 'default_image_url';
                 String artist = item.name ?? 'Unknown Artist';
 
@@ -37,7 +36,6 @@ class ArtistModelOperations {
         });
       }
     } catch (e) {
-      print('Error fetching artists: $e');
     }
 
     return artists;

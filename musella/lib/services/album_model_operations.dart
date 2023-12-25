@@ -50,7 +50,6 @@ class AlbumModelOperations {
         year,
       );
     } catch (e) {
-      print('Error fetching album data for $uri: $e');
       return null; // Return null in case of an error
     }
   }

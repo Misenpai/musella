@@ -1,3 +1,5 @@
+
+
 import 'package:musella/models/songs_model.dart';
 import 'package:spotify/spotify.dart';
 
@@ -39,7 +41,7 @@ class SongsModelOperations {
         }
       }
     } catch (e) {
-      print('Error fetching songs: $e');
+      
     }
 
     return songs;
