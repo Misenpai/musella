@@ -59,10 +59,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
     final spotify = Spotify.SpotifyApi(credentials);
     spotify.tracks.get(widget.audioURL).then((track) async {
       String? songname = track.name;
+      String? artistName = track.artists?.first.name;
       if (songname != null) {
         print(songname);
+
         final yt = YoutubeExplode();
-        final video = (await yt.search.search(songname)).first;
+        final video = (await yt.search.search('$artistName $songname')).first;
         final videoId = video.id.value;
         duration = video.duration;
         setState(() {});
