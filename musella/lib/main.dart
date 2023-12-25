@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:musella/aboutme/about_me.dart';
 import 'package:musella/home/home.dart';
 import 'package:musella/services/music_player_sevice.dart';
 import 'package:provider/provider.dart';
@@ -33,9 +34,10 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData(brightness: Brightness.dark),
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => HomePage(),
+        '/home': (context) => HomePage(),
+        '/about': (context) => AboutMePage(),
       },
-      initialRoute: '/',
+      initialRoute: '/home',
     );
   }
 }

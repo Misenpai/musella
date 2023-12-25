@@ -35,35 +35,67 @@ class Artists extends StatelessWidget {
           ),
           SizedBox(
             height: 180,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: artists.length,
-              itemBuilder: (context, index) {
-                final artist = artists[index];
-                return Padding(
-                  padding: EdgeInsets.only(
-                      left: 16, right: index == artists.length - 1 ? 16 : 0),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 75,
-                        backgroundImage: NetworkImage(artist.imageURL),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        artist.name,
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+            child: artists.isEmpty
+                ? _buildEmptyState()
+                : ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: artists.length,
+                    itemBuilder: (context, index) {
+                      final artist = artists[index];
+                      return Padding(
+                        padding: EdgeInsets.only(
+                            left: 16,
+                            right: index == artists.length - 1 ? 16 : 0),
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 75,
+                              backgroundImage: NetworkImage(artist.imageURL),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              artist.name,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.network(
+                'https://www.lofiandgames.com/share-dinosaur.png',
+                height: 140,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'No Recent Artist',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
