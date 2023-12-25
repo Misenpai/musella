@@ -8,37 +8,48 @@ import 'package:provider/provider.dart';
 class SongsPage extends StatefulWidget {
   final Function(String, String, String) handleBackFromMusicPlayer;
 
-  const SongsPage({super.key, required this.handleBackFromMusicPlayer});
+  const SongsPage({Key? key, required this.handleBackFromMusicPlayer})
+      : super(key: key);
 
   @override
   _SongsPageState createState() => _SongsPageState();
 }
 
 class _SongsPageState extends State<SongsPage> {
-  late List<SongsModel> songs = [];
+  late List<SongsModel> songs;
+  late List<SongsModel> displayedSongs;
+
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _loadSongs();
+    songs = [];
+    displayedSongs = songs;
   }
 
-  Future<void> _loadSongs() async {
-    try {
-      var songsOperations = SongsModelOperations();
+  Future<void> fetchSongs(List<String> songNames) async {
+    final SongsModelOperations songsOperations = SongsModelOperations();
+    final List<SongsModel> loadedSongs =
+        await songsOperations.getSongsModel(songNames);
 
-      final loadedSongs = await songsOperations.getSongsModel(
-          ['Porter Robinson', 'BoyWithUke', 'Powfu', 'David Kushner']);
+    setState(() {
+      songs = loadedSongs;
+      filterSongs(searchController.text);
+    });
+  }
 
-      if (mounted) {
-        setState(() {
-          songs = loadedSongs;
-          songs.sort((a, b) => a.title.compareTo(b.title));
-        });
+  void filterSongs(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        displayedSongs = songs;
+      } else {
+        displayedSongs = songs
+            .where((song) =>
+                song.title.toLowerCase().contains(query.toLowerCase()))
+            .toList();
       }
-    } catch (e) {
-      print('Error loading songs: $e');
-    }
+    });
   }
 
   @override
@@ -50,75 +61,107 @@ class _SongsPageState extends State<SongsPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initial search for empty query
+    fetchSongs([]);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('${songs.length} Songs',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-              InkWell(
-                onTap: () {},
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Ascending',
-                      style: TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_downward,
-                      color: Colors.orange,
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: songs.length,
-              itemBuilder: (context, index) {
-                final song = songs[index];
-                return ListTile(
-                  leading: Image.network(song.imageURL),
-                  title: Text(song.title),
-                  subtitle: Text('${song.artist} | ${song.duration}'),
-                  trailing: IconButton(
-                    icon: Icon(
-                      Icons.play_circle_fill,
-                      color: Colors.orange,
-                    ),
-                    onPressed: () {
-                      widget.handleBackFromMusicPlayer(
-                        song.imageURL,
-                        song.title,
-                        song.artist,
-                      );
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => MusicPlayerPage(
-                            imageURL: song.imageURL,
-                            title: song.title,
-                            artist: song.artist,
-                            audioURL: song.audioURL,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                );
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+            child: TextField(
+              controller: searchController,
+              onChanged: (query) {
+                filterSongs(query);
+                fetchSongs([query]);
               },
+              decoration: InputDecoration(
+                labelText: 'Search Songs',
+                hintText: 'Enter song name',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
             ),
           ),
+          if (displayedSongs.isNotEmpty)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${displayedSongs.length} Songs',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Ascending',
+                        style: TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_downward,
+                        color: Colors.orange,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          if (displayedSongs.isNotEmpty)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: ListView.builder(
+                  itemCount: displayedSongs.length,
+                  itemBuilder: (context, index) {
+                    final song = displayedSongs[index];
+                    return ListTile(
+                      leading: Image.network(song.imageURL),
+                      title: Text(song.title),
+                      subtitle: Text('${song.artist} | ${song.duration}'),
+                      trailing: IconButton(
+                        icon: Icon(
+                          Icons.play_circle_fill,
+                          color: Colors.orange,
+                        ),
+                        onPressed: () {
+                          widget.handleBackFromMusicPlayer(
+                            song.imageURL,
+                            song.title,
+                            song.artist,
+                          );
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => MusicPlayerPage(
+                                imageURL: song.imageURL,
+                                title: song.title,
+                                artist: song.artist,
+                                audioURL: song.audioURL,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
         ],
       ),
     );

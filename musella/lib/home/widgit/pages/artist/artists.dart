@@ -6,7 +6,8 @@ import 'artist_song.dart'; // Import the artist_song.dart file
 class ArtistPage extends StatefulWidget {
   final Function(String, String, String) handleBackFromArtistSongPlayer;
 
-  const ArtistPage({Key? key, required this.handleBackFromArtistSongPlayer}) : super(key: key);
+  const ArtistPage({Key? key, required this.handleBackFromArtistSongPlayer})
+      : super(key: key);
 
   @override
   _ArtistPageState createState() => _ArtistPageState();
@@ -48,8 +49,6 @@ class _ArtistPageState extends State<ArtistPage> {
       filterArtists(searchController.text);
     });
   }
-
-  
 
   void navigateToArtistSongPage(String artistName) {
     Navigator.of(context).push(

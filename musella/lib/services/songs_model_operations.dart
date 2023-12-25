@@ -14,12 +14,12 @@ class SongsModelOperations {
     spotify = SpotifyApi(credentials);
   }
 
-  Future<List<SongsModel>> getSongsModel(List<String> artistNames) async {
+  Future<List<SongsModel>> getSongsModel(List<String> songNames) async {
     List<SongsModel> songs = [];
 
     try {
-      for (var artistName in artistNames) {
-        var searchResults = await spotify.search.get(artistName).first(10);
+      for (var songName in songNames) {
+        var searchResults = await spotify.search.get(songName).first(10);
 
         for (var page in searchResults) {
           for (var item in page.items!) {
@@ -32,9 +32,7 @@ class SongsModelOperations {
               String audioURL =
                   _extractTrackId(item.uri); // Spotify URI as audio URL
 
-              songs
-                  .add(SongsModel(imageURL, title, artist, duration, audioURL));
-              // print(audioURL);
+              songs.add(SongsModel(imageURL, title, artist, duration, audioURL));
             }
           }
         }
