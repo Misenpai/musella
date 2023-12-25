@@ -7,7 +7,7 @@ class Artists extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ArtistUser> artists = ArtistUserOperations.getArtistUser();
+    final List<ArtistUser> artists = ArtistUserOperations.getArtistList();
 
     return SingleChildScrollView(
       child: Column(

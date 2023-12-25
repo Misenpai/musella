@@ -1,18 +1,22 @@
+
+
 import 'package:musella/models/artist_user.dart';
 
 class ArtistUserOperations {
   ArtistUserOperations._() {}
-  static List<ArtistUser> getArtistUser() {
-    return <ArtistUser>[
-      ArtistUser(
-          'https://discord.onl/wp-content/uploads/2023/08/Casual-Boywithuke-Server.jpg',
-          'Boywithuke'),
-      ArtistUser(
-          'https://b.thumbs.redditmedia.com/lQWo1vNQCTd5FCTTIw9B784LvZUwHXUSp3k_pyzEfyk.png',
-          'Porter Robinson'),
-      ArtistUser(
-          'https://images.crunchbase.com/image/upload/c_thumb,h_256,w_256,f_auto,g_faces,z_0.7,q_auto:eco,dpr_1/ptgfi7ayybd148ghc4o3',
-          'Polo G')
-    ];
+  
+
+  static void addArtist(String imageURL, String artist_name) {
+    final artist = ArtistUser(imageURL, artist_name);
+    _artistList.insert(0, artist);
+  }
+
+  static List<ArtistUser> _artistList = [];
+  static List<ArtistUser> getArtistList() {
+    List<ArtistUser> result = [];
+    for (var artist in _artistList) {
+      result.add(ArtistUser(artist.imageURL, artist.name));
+    }
+    return result;
   }
 }

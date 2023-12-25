@@ -45,20 +45,21 @@ class MostPlayed extends StatelessWidget {
                 final album = albums[index];
                 return GestureDetector(
                   onTap: () {
-                    // handleBackFromMusicPlayerMostPlayed(
-                    //   album.imagePath,
-                    //   album.title,
-                    //   album.artist,
-                    // );
-                    // Navigator.of(context).push(
-                    //   MaterialPageRoute(
-                    //     builder: (context) => MusicPlayerPage(
-                    //       imageURL: album.imagePath,
-                    //       title: album.title,
-                    //       artist: album.artist,
-                    //     ),
-                    //   ),
-                    // );
+                    handleBackFromMusicPlayerMostPlayed(
+                      album.imagePath,
+                      album.title,
+                      album.artist,
+                    );
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MusicPlayerPage(
+                          imageURL: album.imagePath,
+                          title: album.title,
+                          artist: album.artist,
+                          audioURL: album.audioURL,
+                        ),
+                      ),
+                    );
                   },
                   child: Padding(
                     padding: EdgeInsets.only(

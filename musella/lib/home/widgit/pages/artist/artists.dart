@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:musella/models/artist_model.dart';
 import 'package:musella/services/artist_model_operations.dart';
+import 'package:musella/services/artist_user_operations.dart';
 import 'artist_song.dart'; // Import the artist_song.dart file
 
 class ArtistPage extends StatefulWidget {
@@ -50,7 +51,8 @@ class _ArtistPageState extends State<ArtistPage> {
     });
   }
 
-  void navigateToArtistSongPage(String artistName) {
+  void navigateToArtistSongPage(String artist_imageURL, String artistName) {
+    ArtistUserOperations.addArtist(artist_imageURL, artistName);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => ArtistSongPage(
@@ -130,7 +132,8 @@ class _ArtistPageState extends State<ArtistPage> {
                       final artist = displayedArtists[index];
                       return InkWell(
                         onTap: () {
-                          navigateToArtistSongPage(artist.artist);
+                          navigateToArtistSongPage(
+                              artist.imageURL, artist.artist);
                         },
                         child: Container(
                           margin: EdgeInsets.only(bottom: 15.0),
