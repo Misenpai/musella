@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:musella/home/widgit/pages/artist/artist_song.dart';
 import 'package:musella/models/artist_user.dart';
 import 'package:musella/services/artist_user_operations.dart';
 
 class Artists extends StatelessWidget {
-  const Artists({super.key});
+  final Function(String, String, String) handleBackFromArtistSongPlayer;
+  const Artists({super.key, required this.handleBackFromArtistSongPlayer});
 
   @override
   Widget build(BuildContext context) {
@@ -42,25 +44,35 @@ class Artists extends StatelessWidget {
                     itemCount: artists.length,
                     itemBuilder: (context, index) {
                       final artist = artists[index];
-                      return Padding(
-                        padding: EdgeInsets.only(
-                            left: 16,
-                            right: index == artists.length - 1 ? 16 : 0),
-                        child: Column(
-                          children: [
-                            CircleAvatar(
-                              radius: 75,
-                              backgroundImage: NetworkImage(artist.imageURL),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              artist.name,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ArtistSongPage(
+                                    artistName: artist.name,
+                                    handleBackFromArtistSongPlayer:
+                                        handleBackFromArtistSongPlayer,
+                                  )));
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              left: 16,
+                              right: index == artists.length - 1 ? 16 : 0),
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 75,
+                                backgroundImage: NetworkImage(artist.imageURL),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                artist.name,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },

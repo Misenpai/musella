@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:musella/home/widgit/header.dart';
 import 'package:musella/home/widgit/pages/artist/artists.dart';
@@ -19,14 +17,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  late PageController _pageController;
 
   String? currentImageUrl;
   String? currentTitle;
   String? currentArtist;
 
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _selectedIndex);
+  }
+
   void _onCategorySelected(int index) {
     setState(() {
+      
       _selectedIndex = index;
+      _pageController.animateToPage(
+        _selectedIndex,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     });
   }
 
@@ -39,27 +50,36 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBody() {
-    switch (_selectedIndex) {
-      case 1:
-        return SongsPage(handleBackFromMusicPlayer: handleBackFromMusicPlayer);
-      case 2:
-        return ArtistPage(
-            handleBackFromArtistSongPlayer: handleBackFromMusicPlayer);
-      default:
-        return SingleChildScrollView(
+    return PageView(
+      controller: _pageController,
+      onPageChanged: (index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      children: [
+        SingleChildScrollView(
           child: Column(
             children: [
               RecentlyPlayed(
-                  handleBackFromMusicPlayerRecentlyPlayed:
-                      handleBackFromMusicPlayer),
-              Artists(),
+                handleBackFromMusicPlayerRecentlyPlayed:
+                    handleBackFromMusicPlayer,
+              ),
+              Artists(
+                handleBackFromArtistSongPlayer: handleBackFromMusicPlayer,
+              ),
               MostPlayed(
-                  handleBackFromMusicPlayerMostPlayed:
-                      handleBackFromMusicPlayer),
+                handleBackFromMusicPlayerMostPlayed: handleBackFromMusicPlayer,
+              ),
             ],
           ),
-        );
-    }
+        ),
+        SongsPage(handleBackFromMusicPlayer: handleBackFromMusicPlayer),
+        ArtistPage(
+          handleBackFromArtistSongPlayer: handleBackFromMusicPlayer,
+        ),
+      ],
+    );
   }
 
   @override
@@ -71,7 +91,10 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Column(
                 children: [
-                  AppHeader(onCategorySelected: _onCategorySelected),
+                  AppHeader(
+                    onCategorySelected: _onCategorySelected,
+                    pageController: _pageController,
+                  ),
                   Expanded(child: _buildBody()),
                 ],
               ),

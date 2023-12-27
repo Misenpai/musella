@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:musella/models/songs_model.dart';
 import 'package:musella/services/music_player_sevice.dart';

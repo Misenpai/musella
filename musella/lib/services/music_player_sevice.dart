@@ -8,13 +8,10 @@ class MusicPlayerService with ChangeNotifier {
 
   Future<void> play(String url) async {
     try {
-      print("the song uri is : $url");
       await player.play(UrlSource(url));
-      print("Playback started");
+
       notifyListeners();
-    } catch (e) {
-      print("Error playing: $e");
-    }
+    } catch (e) {}
   }
 
   Future<void> togglePlayPause() async {
