@@ -14,19 +14,13 @@ class AlbumPage extends StatelessWidget {
         future: albumModelOperations.getAlbumModel(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Show loading indicator while waiting for the data
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            // Show error message if there is an error loading the data
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            // Show message if there are no albums
             return Center(child: Text('No albums found'));
           }
-
-          // Data is loaded, assign it to the albums list
           List<AlbumModel> albums = snapshot.data!;
-          // Sort the albums by title
           albums.sort((a, b) => a.albumTitle.compareTo(b.albumTitle));
           return Column(
             children: [
@@ -39,6 +33,7 @@ class AlbumPage extends StatelessWidget {
                   itemCount: albums.length,
                   itemBuilder: (context, index) {
                     final album = albums[index];
+                    print(album.imageURL);
                     return GridTile(
                       child: Column(
                         children: [
@@ -47,8 +42,12 @@ class AlbumPage extends StatelessWidget {
                               margin: EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage(album.imageURL),
+                                  image:
+                                      NetworkImage(album.imageURL, scale: 1.0),
                                   fit: BoxFit.cover,
+                                  onError: (exception, stackTrace) {
+                                    print('Image failed to load: $exception');
+                                  },
                                 ),
                                 borderRadius: BorderRadius.circular(16),
                               ),

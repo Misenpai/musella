@@ -11,7 +11,7 @@ class BottomNavigation extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        // BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'About Me'),
       ],
       onTap: (index) {

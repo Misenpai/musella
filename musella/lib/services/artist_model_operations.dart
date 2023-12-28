@@ -1,5 +1,3 @@
-
-
 import 'package:musella/models/artist_model.dart';
 import 'package:spotify/spotify.dart';
 
@@ -24,6 +22,7 @@ class ArtistModelOperations {
             for (var item in page.items!) {
               if (item is Artist && item.id != null) {
                 String imageURL = item.images?.first.url ?? 'default_image_url';
+                print("image URl is : $imageURL");
                 String artist = item.name ?? 'Unknown Artist';
 
                 artists.add(ArtistModel(
@@ -35,8 +34,7 @@ class ArtistModelOperations {
           }
         });
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     return artists;
   }

@@ -6,10 +6,10 @@ class AlbumModel {
   String soungsCount;
 
   AlbumModel(
+    this.imageURL,
     this.albumTitle,
     this.artistName,
-    this.imageURL,
-    this.soungsCount,
     this.year,
+    this.soungsCount,
   );
 }

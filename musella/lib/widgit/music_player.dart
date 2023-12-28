@@ -1,11 +1,9 @@
 import 'dart:async';
-
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:musella/services/music_operations.dart';
 import 'package:musella/services/music_player_sevice.dart';
-
 import 'package:provider/provider.dart';
 import 'package:spotify/spotify.dart' as Spotify;
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -17,12 +15,12 @@ class MusicPlayerPage extends StatefulWidget {
   final String audioURL;
 
   const MusicPlayerPage({
-    Key? key,
+    super.key,
     required this.imageURL,
     required this.title,
     required this.artist,
     required this.audioURL,
-  }) : super(key: key);
+  });
 
   @override
   _MusicPlayerPageState createState() => _MusicPlayerPageState();
@@ -45,34 +43,38 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
   @override
   void initState() {
     super.initState();
+    initializeMusic();
     final musicPlayerService =
         Provider.of<MusicPlayerService>(context, listen: false);
-
     _playerStateChangedSubscription =
         musicPlayerService.player.onPlayerStateChanged.listen((state) {
       setState(() {});
     });
+  }
 
-    print(widget.audioURL);
-
+  Future<void> initializeMusic() async {
     final credentials = Spotify.SpotifyApiCredentials(
         "4c6480b9dad641e0949b71b13d0ca7c0", "d07d2808092846ae9a452961db39b7f2");
     final spotify = Spotify.SpotifyApi(credentials);
-    spotify.tracks.get(widget.audioURL).then((track) async {
+    final yt = YoutubeExplode();
+
+    // Start the stopwatch to measure the time
+    final stopwatch = Stopwatch()..start();
+
+    try {
+      final track = await spotify.tracks.get(widget.audioURL);
       String? songname = track.name;
       String? artistName = track.artists?.first.name;
       if (songname != null) {
-        print(songname);
-
-        final yt = YoutubeExplode();
         final video = (await yt.search.search('$artistName $songname')).first;
         final videoId = video.id.value;
         duration = video.duration;
 
         var manifest = await yt.videos.streamsClient.getManifest(videoId);
         var audioId = manifest.audioOnly.first.url;
-        print(audioId);
+        final playStopwatch = Stopwatch()..start();
         musicPlayerService.play(audioId.toString());
+        print('Time to play the song: ${playStopwatch.elapsed}');
         musicPlayerService.player.onPositionChanged.listen(
           (position) {
             setState(() {
@@ -85,7 +87,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
           _postion = Duration.zero;
         });
       }
-    });
+    } finally {
+      yt.close();
+
+      // Stop the stopwatch and print the elapsed time
+      print('Time to get the song from YouTube: ${stopwatch.elapsed}');
+    }
 
     MusicOperations.addMusic(
       widget.imageURL,
@@ -98,7 +105,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
   @override
   void dispose() {
     _playerStateChangedSubscription.cancel();
-    // Do not stop or dispose of the player to allow playback in the background
     super.dispose();
   }
 
@@ -113,7 +119,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            // Handle back button pressed
             Navigator.of(context).pop();
           },
         ),
@@ -158,8 +163,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                icon: Icon(Icons.replay_5,
-                    color: Colors.white, size: 32.0), // 5 seconds backward
+                icon: Icon(Icons.replay_5, color: Colors.white, size: 32.0),
                 onPressed: () {
                   musicPlayerService.player.seek(
                     _postion - Duration(seconds: 5),
@@ -183,8 +187,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.forward_10,
-                    color: Colors.white, size: 32.0), // 10 seconds forward
+                icon: Icon(Icons.forward_10, color: Colors.white, size: 32.0),
                 onPressed: () {
                   musicPlayerService.player.seek(
                     _postion + Duration(seconds: 10),

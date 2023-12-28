@@ -8,10 +8,15 @@ class MusicPlayerService with ChangeNotifier {
 
   Future<void> play(String url) async {
     try {
+      final stopwatch = Stopwatch()..start();
+
       await player.play(UrlSource(url));
+      print('Time to play the song from music_player: ${stopwatch.elapsed}');
 
       notifyListeners();
-    } catch (e) {}
+    } catch (e) {
+      print('Error during play: $e');
+    }
   }
 
   Future<void> togglePlayPause() async {
@@ -22,8 +27,6 @@ class MusicPlayerService with ChangeNotifier {
     }
     notifyListeners();
   }
-
-  // Add other methods and listeners as needed
 
   void dispose() {
     player.dispose();
