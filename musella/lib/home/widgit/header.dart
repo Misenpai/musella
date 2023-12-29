@@ -19,7 +19,7 @@ class _AppHeaderState extends State<AppHeader> {
     'Suggested',
     'Songs',
     'Artists',
-    'Playlist',
+    'Album',
   ];
 
   @override
