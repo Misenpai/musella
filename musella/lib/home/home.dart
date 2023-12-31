@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:musella/aboutme/about_me.dart';
 import 'package:musella/home/widgit/header.dart';
 import 'package:musella/home/widgit/pages/album/playlist.dart';
 import 'package:musella/home/widgit/pages/artist/artists.dart';
@@ -7,6 +8,7 @@ import 'package:musella/home/widgit/pages/songs/songs.dart';
 import 'package:musella/home/widgit/pages/suggested/artist.dart';
 import 'package:musella/home/widgit/pages/suggested/most_played.dart';
 import 'package:musella/home/widgit/pages/suggested/recently_played.dart';
+import 'package:musella/playlist/playlist.dart';
 import 'package:musella/widgit/bottom_navigation.dart';
 import 'package:musella/widgit/miniplayer.dart';
 
@@ -19,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  int index_bottom = 0;
   late PageController _pageController;
 
   String? currentImageUrl;
@@ -31,23 +34,58 @@ class _HomePageState extends State<HomePage> {
     _pageController = PageController(initialPage: _selectedIndex);
   }
 
+  Widget _buildPageContent() {
+    switch (index_bottom) {
+      case 0:
+        return Column(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  AppHeader(
+                    onCategorySelected: _onCategorySelected,
+                    pageController: _pageController,
+                  ),
+                  Expanded(child: _buildBody()),
+                ],
+              ),
+            ),
+            MiniPlayer(
+              imageURL: currentImageUrl,
+              title: currentTitle,
+            ),
+          ],
+        );
+      case 1:
+        return PlaylistPage();
+      case 2:
+        return AboutMePage();
+      default:
+        return Container();
+    }
+  }
+
   void _onCategorySelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-      _pageController.animateToPage(
-        _selectedIndex,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    });
+    if (mounted) {
+      setState(() {
+        _selectedIndex = index;
+        _pageController.animateToPage(
+          _selectedIndex,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      });
+    }
   }
 
   void handleBackFromMusicPlayer(String url, String title, String artist) {
-    setState(() {
-      currentImageUrl = url;
-      currentTitle = title;
-      currentArtist = artist;
-    });
+    if (mounted) {
+      setState(() {
+        currentImageUrl = url;
+        currentTitle = title;
+        currentArtist = artist;
+      });
+    }
   }
 
   Widget _buildBody() {
@@ -84,48 +122,43 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _onBottomNavigationItemTapped(int index) {
+    if (mounted) {
+      setState(() {
+        index_bottom = index;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.music_note, // Choose the appropriate icon
-                  color: Colors.orange, // Set the desired color
-                ),
-                SizedBox(width: 8),
-                Text(
-                  'Musella',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            Icon(
+              Icons.music_note, // Choose the appropriate icon
+              color: Colors.orange, // Set the desired color
             ),
-            Expanded(
-              child: Column(
-                children: [
-                  AppHeader(
-                    onCategorySelected: _onCategorySelected,
-                    pageController: _pageController,
-                  ),
-                  Expanded(child: _buildBody()),
-                ],
+            SizedBox(width: 8),
+            Text(
+              'Musella',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
-            ),
-            MiniPlayer(
-              imageURL: currentImageUrl,
-              title: currentTitle,
             ),
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNavigation(),
+      body: SafeArea(
+        child: _buildPageContent(),
+      ),
+      bottomNavigationBar: BottomNavigation(
+        onItemSelected: _onBottomNavigationItemTapped,
+      ),
     );
   }
 }

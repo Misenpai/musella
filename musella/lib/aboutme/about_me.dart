@@ -110,7 +110,6 @@ class AboutMePage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNavigation(),
     );
   }
 }

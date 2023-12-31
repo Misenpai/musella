@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatelessWidget {
-  const BottomNavigation({Key? key});
+  final void Function(int) onItemSelected;
+  const BottomNavigation({Key? key, required this.onItemSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -13,19 +14,7 @@ class BottomNavigation extends StatelessWidget {
             icon: Icon(Icons.playlist_play), label: 'Playlist'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'About Me'),
       ],
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            Navigator.pushNamed(context, '/home');
-            break;
-          case 1:
-            Navigator.pushNamed(context, '');
-            break;
-          case 2:
-            Navigator.pushNamed(context, '/about');
-            break;
-        }
-      },
+      onTap: onItemSelected,
     );
   }
 }

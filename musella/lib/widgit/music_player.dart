@@ -122,6 +122,15 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.playlist_add, color: Colors.white),
+            onPressed: () {
+              // Implement the logic for adding to playlist here
+              // You may show a dialog, navigate to a new page, etc.
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -139,22 +148,28 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
             style: TextStyle(color: Colors.white54, fontSize: 18),
           ),
           Spacer(),
-          Image.network(widget.imageURL, fit: BoxFit.cover),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Image.network(widget.imageURL, fit: BoxFit.cover),
+          ),
           Spacer(),
           StreamBuilder(
             stream: musicPlayerService.player.onPlayerStateChanged,
             builder: (context, snapshot) {
-              return ProgressBar(
-                progress: _postion,
-                total: duration ?? const Duration(minutes: 4),
-                onSeek: (duration) {
-                  musicPlayerService.player.seek(duration);
-                },
-                timeLabelTextStyle: TextStyle(color: Colors.white),
-                thumbColor: Colors.white,
-                progressBarColor: Colors.white,
-                bufferedBarColor: Colors.white38,
-                baseBarColor: Colors.white10,
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: ProgressBar(
+                  progress: _postion,
+                  total: duration ?? const Duration(minutes: 4),
+                  onSeek: (duration) {
+                    musicPlayerService.player.seek(duration);
+                  },
+                  timeLabelTextStyle: TextStyle(color: Colors.white),
+                  thumbColor: Colors.white,
+                  progressBarColor: Colors.white,
+                  bufferedBarColor: Colors.white38,
+                  baseBarColor: Colors.white10,
+                ),
               );
             },
           ),

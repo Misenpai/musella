@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:musella/models/music.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MusicOperations {
   MusicOperations._();
 
   static void addMusic(
-      String imageURL, String title, String artist, String audioURL) {
+      String imageURL, String title, String artist, String audioURL) async {
     final newMusic = Music(imageURL, title, artist, audioURL);
 
     // Check if the new music is already present in the list
@@ -25,6 +28,7 @@ class MusicOperations {
     if (_musicList.length > 7) {
       _musicList.removeLast();
     }
+    await _saveToPrefs();
   }
 
   static final List<Music> _musicList = [];
@@ -33,5 +37,23 @@ class MusicOperations {
     // Create a copy of the music list to avoid direct manipulation
     List<Music> result = List.from(_musicList);
     return result;
+  }
+
+  static Future<void> loadMusicList() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? musicListStr = prefs.getString('musicList');
+    if (musicListStr != null) {
+      Iterable l = json.decode(musicListStr);
+      _musicList.clear();
+      _musicList
+          .addAll(List<Music>.from(l.map((model) => Music.fromJson(model))));
+    }
+  }
+
+  static Future<void> _saveToPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    String artistListStr =
+        json.encode(_musicList.map((e) => e.toJson()).toList());
+    await prefs.setString('musicList', artistListStr);
   }
 }

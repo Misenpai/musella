@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:musella/aboutme/about_me.dart';
 import 'package:musella/home/home.dart';
+import 'package:musella/playlist/playlist.dart';
 import 'package:musella/services/artist_user_operations.dart';
+import 'package:musella/services/music_operations.dart';
 import 'package:musella/services/music_player_sevice.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   await ArtistUserOperations.loadArtistList();
+  await MusicOperations.loadMusicList();
   runApp(ChangeNotifierProvider(
     create: (context) => MusicPlayerService(),
     child: MyApp(),
@@ -38,6 +41,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => HomePage(),
         '/about': (context) => AboutMePage(),
+        '/playlist': (context) => PlaylistPage(),
       },
       initialRoute: '/home',
     );

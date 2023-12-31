@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:musella/models/songs_model.dart';
 import 'package:musella/services/music_player_sevice.dart';
@@ -17,6 +15,7 @@ class SongsPage extends StatefulWidget {
 }
 
 class _SongsPageState extends State<SongsPage> {
+  late MusicPlayerService musicPlayerService;
   late List<SongsModel> songs;
   late List<SongsModel> displayedSongs;
 
@@ -58,16 +57,16 @@ class _SongsPageState extends State<SongsPage> {
 
   @override
   void dispose() {
-    final musicPlayerService =
-        Provider.of<MusicPlayerService>(context, listen: false);
-    musicPlayerService.player.pause(); // Pause the player when navigating back
-    _searchFocusNode.dispose(); // Dispose the focus node
+    _searchFocusNode.dispose();
+
     super.dispose();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    musicPlayerService =
+        Provider.of<MusicPlayerService>(context, listen: false);
     // Initial search for empty query
     fetchSongs([]);
   }
@@ -95,14 +94,7 @@ class _SongsPageState extends State<SongsPage> {
                   labelText: 'Search Songs',
                   hintText: 'Enter song name',
                   prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide:
-                        BorderSide(color: Color(0xafff8c00), width: 10.0),
-                  ),
+                  border: OutlineInputBorder(),
                 ),
               ),
             ),
