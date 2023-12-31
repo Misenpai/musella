@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:musella/models/songs_model.dart';
 import 'package:musella/services/music_player_sevice.dart';
@@ -93,7 +95,14 @@ class _SongsPageState extends State<SongsPage> {
                   labelText: 'Search Songs',
                   hintText: 'Enter song name',
                   prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide:
+                        BorderSide(color: Color(0xafff8c00), width: 10.0),
+                  ),
                 ),
               ),
             ),

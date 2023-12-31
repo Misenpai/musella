@@ -1,5 +1,3 @@
-
-
 import 'package:musella/models/songs_model.dart';
 import 'package:spotify/spotify.dart';
 
@@ -21,7 +19,7 @@ class SongsModelOperations {
 
     try {
       for (var songName in songNames) {
-        var searchResults = await spotify.search.get(songName).first(10);
+        var searchResults = await spotify.search.get(songName).first();
 
         for (var page in searchResults) {
           for (var item in page.items!) {
@@ -40,9 +38,7 @@ class SongsModelOperations {
           }
         }
       }
-    } catch (e) {
-      
-    }
+    } catch (e) {}
 
     return songs;
   }

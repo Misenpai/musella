@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatelessWidget {
@@ -11,7 +9,8 @@ class BottomNavigation extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       items: [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        
+        BottomNavigationBarItem(
+            icon: Icon(Icons.playlist_play), label: 'Playlist'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'About Me'),
       ],
       onTap: (index) {
@@ -19,8 +18,10 @@ class BottomNavigation extends StatelessWidget {
           case 0:
             Navigator.pushNamed(context, '/home');
             break;
-
           case 1:
+            Navigator.pushNamed(context, '');
+            break;
+          case 2:
             Navigator.pushNamed(context, '/about');
             break;
         }

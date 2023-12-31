@@ -90,6 +90,23 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.music_note, // Choose the appropriate icon
+                  color: Colors.orange, // Set the desired color
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'Musella',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
             Expanded(
               child: Column(
                 children: [

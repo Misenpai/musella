@@ -23,7 +23,7 @@ class _AlbumPageState extends State<AlbumPage> {
     displayedArtistAlbum = allAlbum;
   }
 
-  void filterAndFetchAlbum(String query) {
+  void filterAlbum(String query) {
     setState(() {
       if (query.isEmpty) {
         displayedArtistAlbum = allAlbum;
@@ -34,21 +34,15 @@ class _AlbumPageState extends State<AlbumPage> {
             .toList();
       }
     });
-
-    // Use debounce to delay API calls
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(seconds: 1), () {
-      fetchAlbum([query]);
-    });
   }
 
   Future<void> fetchAlbum(List<String> albumNames) async {
     final AlbumModelOperations albumModelOperations = AlbumModelOperations();
     final List<AlbumModel> albums =
-        await albumModelOperations.getAlbumModel(albumNames);
+        await albumModelOperations.getArtistModel(albumNames);
     setState(() {
       allAlbum = albums;
-      filterAndFetchAlbum(searchController.text);
+      filterAlbum(searchController.text);
     });
   }
 
@@ -66,7 +60,8 @@ class _AlbumPageState extends State<AlbumPage> {
               child: TextField(
                 controller: searchController,
                 onChanged: (query) {
-                  filterAndFetchAlbum(query);
+                  filterAlbum(query);
+                  fetchAlbum([query]);
                 },
                 decoration: InputDecoration(
                   labelText: 'Search Albums',
@@ -81,7 +76,7 @@ class _AlbumPageState extends State<AlbumPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '${displayedArtistAlbum.length} artists',
+                    '${displayedArtistAlbum.length} albums',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

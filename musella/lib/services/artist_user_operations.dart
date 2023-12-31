@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:musella/models/artist_user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ArtistUserOperations {
   ArtistUserOperations._();
 
-  static void addArtist(String imageURL, String artistName) {
+  static final List<ArtistUser> _artistList = [];
+
+  static void addArtist(String imageURL, String artistName) async {
     final newArtist = ArtistUser(imageURL, artistName);
 
     // Check if the new artist is already present in the list
@@ -22,13 +27,27 @@ class ArtistUserOperations {
     if (_artistList.length > 7) {
       _artistList.removeLast();
     }
+
+    await _saveToPrefs();
   }
 
-  static final List<ArtistUser> _artistList = [];
+  static Future<void> loadArtistList() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? artistListStr = prefs.getString('artistList');
+    if (artistListStr != null) {
+      Iterable l = json.decode(artistListStr);
+      _artistList.clear();
+      _artistList.addAll(List<ArtistUser>.from(l.map((model) => ArtistUser.fromJson(model))));
+    }
+  }
+
+  static Future<void> _saveToPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    String artistListStr = json.encode(_artistList.map((e) => e.toJson()).toList());
+    await prefs.setString('artistList', artistListStr);
+  }
 
   static List<ArtistUser> getArtistList() {
-    // Create a copy of the artist list to avoid direct manipulation
-    List<ArtistUser> result = List.from(_artistList);
-    return result;
+    return List.from(_artistList);
   }
 }

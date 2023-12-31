@@ -16,7 +16,8 @@ class ArtistModelOperations {
     try {
       for (var artistName in artistNames) {
         await _handleRateLimit(() async {
-          var searchResults = await spotify.search.get(artistName).first(1);
+          var searchResults = await spotify.search.get(artistName).first();
+          print('Search Result: ${searchResults.first}');
 
           for (var page in searchResults) {
             for (var item in page.items!) {
