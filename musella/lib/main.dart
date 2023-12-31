@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:musella/aboutme/about_me.dart';
 import 'package:musella/home/home.dart';
 import 'package:musella/playlist/playlist.dart';
+import 'package:musella/services/album_user_operation.dart';
 import 'package:musella/services/artist_user_operations.dart';
 import 'package:musella/services/music_operations.dart';
 import 'package:musella/services/music_player_sevice.dart';
@@ -13,6 +14,7 @@ void main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   await ArtistUserOperations.loadArtistList();
   await MusicOperations.loadMusicList();
+  await AlbumUserOperations.loadAlbumList();
   runApp(ChangeNotifierProvider(
     create: (context) => MusicPlayerService(),
     child: MyApp(),

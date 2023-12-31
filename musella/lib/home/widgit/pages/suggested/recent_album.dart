@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:musella/models/music.dart';
-import 'package:musella/services/music_operations.dart';
-import 'package:musella/widgit/music_player.dart';
+import 'package:musella/models/album_model.dart';
+import 'package:musella/services/album_user_operation.dart';
 
-class MostPlayed extends StatelessWidget {
+class AlbumRecent extends StatelessWidget {
   final Function(String, String, String) handleBackFromMusicPlayerMostPlayed;
-  const MostPlayed(
+  const AlbumRecent(
       {super.key, required this.handleBackFromMusicPlayerMostPlayed});
 
   @override
   Widget build(BuildContext context) {
-    final List<Music> albums = MusicOperations.getMusicList();
+    final List<AlbumModel> albums = AlbumUserOperations.getAlbumList();
 
     return SingleChildScrollView(
       child: Column(
@@ -23,7 +22,7 @@ class MostPlayed extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Most Played',
+                  'Recent Album',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
@@ -47,21 +46,16 @@ class MostPlayed extends StatelessWidget {
                       final album = albums[index];
                       return GestureDetector(
                         onTap: () {
-                          handleBackFromMusicPlayerMostPlayed(
-                            album.imagePath,
-                            album.title,
-                            album.artist,
-                          );
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => MusicPlayerPage(
-                                imageURL: album.imagePath,
-                                title: album.title,
-                                artist: album.artist,
-                                audioURL: album.audioURL,
-                              ),
-                            ),
-                          );
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (context) => MusicPlayerPage(
+                          //       imageURL: album.imagePath,
+                          //       title: album.title,
+                          //       artist: album.artist,
+                          //       audioURL: album.audioURL,
+                          //     ),
+                          //   ),
+                          // );
                         },
                         child: Padding(
                           padding: EdgeInsets.only(
@@ -72,7 +66,7 @@ class MostPlayed extends StatelessWidget {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: Image.network(
-                                  album.imagePath,
+                                  album.imageURL,
                                   fit: BoxFit.cover,
                                   width: 150,
                                   height: 150,
@@ -80,14 +74,14 @@ class MostPlayed extends StatelessWidget {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                album.title,
+                                album.albumTitle,
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold),
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Text(
-                                album.artist,
+                                "${album.artistName} | ${album.year}",
                                 style: TextStyle(color: Colors.grey),
                                 overflow: TextOverflow.ellipsis,
                               ),

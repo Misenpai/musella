@@ -37,13 +37,15 @@ class ArtistUserOperations {
     if (artistListStr != null) {
       Iterable l = json.decode(artistListStr);
       _artistList.clear();
-      _artistList.addAll(List<ArtistUser>.from(l.map((model) => ArtistUser.fromJson(model))));
+      _artistList.addAll(
+          List<ArtistUser>.from(l.map((model) => ArtistUser.fromJson(model))));
     }
   }
 
   static Future<void> _saveToPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    String artistListStr = json.encode(_artistList.map((e) => e.toJson()).toList());
+    String artistListStr =
+        json.encode(_artistList.map((e) => e.toJson()).toList());
     await prefs.setString('artistList', artistListStr);
   }
 

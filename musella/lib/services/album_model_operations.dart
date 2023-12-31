@@ -20,23 +20,19 @@ class AlbumModelOperations {
     try {
       for (var albumName in albumNames) {
         var searchResults = await spotify.search.get(albumName).first();
-        print('Search Result: ${searchResults.first}');
+
+        print('Search Result: $searchResults');
         for (var page in searchResults) {
           for (var item in page.items!) {
-            if (item is Album && item.id != null) {
-              String imageURL = item.images?.first.url ?? "";
-              String albumTitle = item.name ?? "";
+            if (item is AlbumSimple) {
+              String imageURL = item.images?.first.url ?? "No image";
+              String albumTitle = item.name ?? "No title";
               String artistName = item.artists?.first.name ?? '';
               String year = item.releaseDate ?? '';
               String songCount = '${item.tracks!.length} songs';
 
               albums.add(AlbumModel(
                   imageURL, albumTitle, artistName, year, songCount));
-              print(imageURL);
-              print(albumTitle);
-              print(year);
-              print(artistName);
-              print(songCount);
             }
           }
         }

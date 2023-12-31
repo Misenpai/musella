@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:musella/aboutme/about_me.dart';
 import 'package:musella/home/widgit/header.dart';
-import 'package:musella/home/widgit/pages/album/playlist.dart';
+import 'package:musella/home/widgit/pages/album/album.dart';
 import 'package:musella/home/widgit/pages/artist/artists.dart';
 
 import 'package:musella/home/widgit/pages/songs/songs.dart';
 import 'package:musella/home/widgit/pages/suggested/artist.dart';
-import 'package:musella/home/widgit/pages/suggested/most_played.dart';
+import 'package:musella/home/widgit/pages/suggested/recent_album.dart';
 import 'package:musella/home/widgit/pages/suggested/recently_played.dart';
 import 'package:musella/playlist/playlist.dart';
 import 'package:musella/widgit/bottom_navigation.dart';
@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
               Artists(
                 handleBackFromArtistSongPlayer: handleBackFromMusicPlayer,
               ),
-              MostPlayed(
+              AlbumRecent(
                 handleBackFromMusicPlayerMostPlayed: handleBackFromMusicPlayer,
               ),
             ],

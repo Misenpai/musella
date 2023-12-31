@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:musella/models/album_model.dart';
 import 'package:musella/services/album_model_operations.dart';
+import 'package:musella/services/album_user_operation.dart';
 
 class AlbumPage extends StatefulWidget {
   const AlbumPage({Key? key});
@@ -14,7 +15,6 @@ class _AlbumPageState extends State<AlbumPage> {
   late List<AlbumModel> allAlbum;
   late List<AlbumModel> displayedArtistAlbum;
   final TextEditingController searchController = TextEditingController();
-  Timer? _debounce;
 
   @override
   void initState() {
@@ -34,6 +34,12 @@ class _AlbumPageState extends State<AlbumPage> {
             .toList();
       }
     });
+  }
+
+  void navigateToAlbumPage(String albumImage, String albumTitle,
+      String artistName, String albumyear, String songsCount) {
+    AlbumUserOperations.addAlbum(
+        albumImage, albumTitle, artistName, albumyear, songsCount);
   }
 
   Future<void> fetchAlbum(List<String> albumNames) async {
@@ -115,40 +121,48 @@ class _AlbumPageState extends State<AlbumPage> {
                   itemBuilder: (context, index) {
                     final album = displayedArtistAlbum[index];
                     print((album.imageURL));
-                    return GridTile(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              margin: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(album.imageURL, scale: 1),
-                                  fit: BoxFit.cover,
-                                  onError: (exception, StackTrace) {
-                                    print("Image failed to load : $exception");
-                                  },
+                    return InkWell(
+                      onTap: () {
+                        navigateToAlbumPage(album.imageURL, album.albumTitle,
+                            album.artistName, album.year, album.songsCount);
+                      },
+                      child: GridTile(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image:
+                                        NetworkImage(album.imageURL, scale: 1),
+                                    fit: BoxFit.cover,
+                                    onError: (exception, StackTrace) {
+                                      print(
+                                          "Image failed to load : $exception");
+                                    },
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
-                                borderRadius: BorderRadius.circular(16),
                               ),
                             ),
-                          ),
-                          Text(
-                            album.albumTitle,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                            Text(
+                              album.albumTitle,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "${album.artistName} | ${album.year}",
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                          Text(
-                            album.soungsCount,
-                            style: TextStyle(color: Colors.white),
-                          )
-                        ],
+                            Text(
+                              "${album.artistName} | ${album.year}",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                            Text(
+                              album.songsCount,
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
                       ),
                     );
                   },
