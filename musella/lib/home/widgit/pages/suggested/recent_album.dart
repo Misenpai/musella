@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:musella/home/widgit/pages/album/album_play.dart';
 import 'package:musella/models/album_model.dart';
 import 'package:musella/services/album_user_operation.dart';
 
 class AlbumRecent extends StatelessWidget {
-  final Function(String, String, String) handleBackFromMusicPlayerMostPlayed;
+  final Function(String, String, String) handleBackFromAlbumPlayerMostPlayed;
   const AlbumRecent(
-      {super.key, required this.handleBackFromMusicPlayerMostPlayed});
+      {super.key, required this.handleBackFromAlbumPlayerMostPlayed});
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +47,11 @@ class AlbumRecent extends StatelessWidget {
                       final album = albums[index];
                       return GestureDetector(
                         onTap: () {
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) => MusicPlayerPage(
-                          //       imageURL: album.imagePath,
-                          //       title: album.title,
-                          //       artist: album.artist,
-                          //       audioURL: album.audioURL,
-                          //     ),
-                          //   ),
-                          // );
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => AlbumSongPage(
+                                    albumName: album.id,
+                                    handleBackFromAlbumSongPlayer: handleBackFromAlbumPlayerMostPlayed,
+                                  )));
                         },
                         child: Padding(
                           padding: EdgeInsets.only(

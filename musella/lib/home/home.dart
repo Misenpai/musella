@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                 handleBackFromArtistSongPlayer: handleBackFromMusicPlayer,
               ),
               AlbumRecent(
-                handleBackFromMusicPlayerMostPlayed: handleBackFromMusicPlayer,
+                handleBackFromAlbumPlayerMostPlayed: handleBackFromMusicPlayer,
               ),
             ],
           ),
@@ -117,7 +117,9 @@ class _HomePageState extends State<HomePage> {
         ArtistPage(
           handleBackFromArtistSongPlayer: handleBackFromMusicPlayer,
         ),
-        AlbumPage(),
+        AlbumPage(
+          handleBackFromAlbumSongPlayer: handleBackFromMusicPlayer,
+        ),
       ],
     );
   }

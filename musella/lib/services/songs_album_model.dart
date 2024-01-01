@@ -1,10 +1,10 @@
 import 'package:musella/models/songs_model.dart';
 import 'package:spotify/spotify.dart';
 
-class SongsModelOperations {
+class SongsAlbumModelOperations {
   late SpotifyApi spotify;
 
-  SongsModelOperations() {
+  SongsAlbumModelOperations() {
     var keyMap = {
       "id": "4c6480b9dad641e0949b71b13d0ca7c0",
       "secret": "d07d2808092846ae9a452961db39b7f2"
@@ -14,31 +14,30 @@ class SongsModelOperations {
     spotify = SpotifyApi(credentials);
   }
 
-  Future<List<SongsModel>> getSongsModel(List<String> songNames) async {
+  Future<List<SongsModel>> getSongsAlbumModel(List<String> albumIds) async {
     List<SongsModel> songs = [];
 
     try {
-      for (var songName in songNames) {
-        var searchResults = await spotify.search.get(songName).first();
+      for (var albumId in albumIds) {
+        var detailedAlbum = await spotify.albums.get(albumId);
+        // Ensure that tracks is treated as an Iterable
+        var tracks = detailedAlbum.tracks;
+        if (tracks != null) {
+          for (var track in tracks) {
+            String imageURL =
+                detailedAlbum.images?.first.url ?? 'default_image_url';
+            String title = track.name ?? 'Unknown Title';
+            String artist = track.artists?.first.name ?? 'Unknown';
+            String duration = _formatDuration(track.duration ?? Duration.zero);
+            String audioURL = _extractTrackId(track.uri);
 
-        for (var page in searchResults) {
-          for (var item in page.items!) {
-            if (item is Track) {
-              String imageURL =
-                  item.album?.images?.first.url ?? 'default_image_url';
-              String title = item.name ?? 'Unknown Title';
-              String artist = item.artists?.first.name ?? 'Unknown';
-              String duration = _formatDuration(item.duration ?? Duration.zero);
-              String audioURL =
-                  _extractTrackId(item.uri); 
-
-              songs
-                  .add(SongsModel(imageURL, title, artist, duration, audioURL));
-            }
+            songs.add(SongsModel(imageURL, title, artist, duration, audioURL));
           }
         }
       }
-    } catch (e) {}
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
 
     return songs;
   }

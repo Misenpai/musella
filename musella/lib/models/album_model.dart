@@ -4,6 +4,7 @@ class AlbumModel {
   String artistName;
   String year;
   String songsCount;
+  String id;
 
   AlbumModel(
     this.imageURL,
@@ -11,6 +12,7 @@ class AlbumModel {
     this.artistName,
     this.year,
     this.songsCount,
+    this.id
   );
 
   AlbumModel.fromJson(Map<String, dynamic> json)
@@ -18,12 +20,14 @@ class AlbumModel {
         albumTitle = json['albumTitle'],
         artistName = json['artistName'],
         year = json['year'],
-        songsCount = json['songsCount'];
+        songsCount = json['songsCount'],
+        id = json['id'];
   Map<String, dynamic> toJson() => {
         'imageURL': imageURL,
         'albumTitle': albumTitle,
         'artistName': artistName,
         'year': year,
         'songsCount': songsCount,
+        'id': id,
       };
 }

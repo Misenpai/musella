@@ -14,9 +14,16 @@ class AlbumUserOperations {
     String artistName,
     String year,
     String songsCount,
+    String id,
   ) async {
-    final newAlbum =
-        AlbumModel(imageURL, albumTitle, artistName, year, songsCount);
+    final newAlbum = AlbumModel(
+      imageURL,
+      albumTitle,
+      artistName,
+      year,
+      songsCount,
+      id
+    );
 
     // Check if the new artist is already present in the list
     int existingIndex = _albumList.indexWhere((album) =>

@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:musella/models/songs_model.dart';
-import 'package:musella/services/songs_model_operations.dart';
+import 'package:musella/services/songs_album_model.dart';
 import 'package:musella/widgit/music_player.dart';
 
-class ArtistSongPage extends StatefulWidget {
-  final String artistName;
-  final Function(String, String, String) handleBackFromArtistSongPlayer;
+class AlbumSongPage extends StatefulWidget {
+  final String albumName;
+  final Function(String, String, String) handleBackFromAlbumSongPlayer;
 
-  const ArtistSongPage({
+  const AlbumSongPage({
     super.key,
-    required this.artistName,
-    required this.handleBackFromArtistSongPlayer,
+    required this.albumName,
+    required this.handleBackFromAlbumSongPlayer,
   });
 
   @override
-  _ArtistSongPageState createState() => _ArtistSongPageState();
+  _AlbumSongPageState createState() => _AlbumSongPageState();
 }
 
-class _ArtistSongPageState extends State<ArtistSongPage> {
+class _AlbumSongPageState extends State<AlbumSongPage> {
   late List<SongsModel> songs;
   bool isLoading = true;
 
@@ -29,12 +29,13 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
 
   Future<void> _loadSongs() async {
     try {
-      var songsOperations = SongsModelOperations();
+      var songsOperations = SongsAlbumModelOperations();
 
       final loadedSongs =
-          await songsOperations.getSongsModel([widget.artistName]);
+          await songsOperations.getSongsAlbumModel([widget.albumName]);
+      print("ALbum loadedSongs  is : $loadedSongs");
 
-      print("artist name is : ${widget.artistName}");
+      print("name is : ${widget.albumName}");
 
       if (mounted) {
         setState(() {
@@ -73,7 +74,7 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
                   trailing: IconButton(
                     icon: Icon(Icons.play_circle_fill, color: Colors.orange),
                     onPressed: () {
-                      widget.handleBackFromArtistSongPlayer(
+                      widget.handleBackFromAlbumSongPlayer(
                         song.imageURL,
                         song.title,
                         song.artist,

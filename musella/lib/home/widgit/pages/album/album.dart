@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:musella/home/widgit/pages/album/album_play.dart';
 import 'package:musella/models/album_model.dart';
 import 'package:musella/services/album_model_operations.dart';
 import 'package:musella/services/album_user_operation.dart';
 
 class AlbumPage extends StatefulWidget {
-  const AlbumPage({Key? key});
+  final Function(String, String, String) handleBackFromAlbumSongPlayer;
+  const AlbumPage({Key? key, required this.handleBackFromAlbumSongPlayer});
 
   @override
   State<AlbumPage> createState() => _AlbumPageState();
@@ -37,9 +39,17 @@ class _AlbumPageState extends State<AlbumPage> {
   }
 
   void navigateToAlbumPage(String albumImage, String albumTitle,
-      String artistName, String albumyear, String songsCount) {
+      String artistName, String albumyear, String songsCount, String id) {
     AlbumUserOperations.addAlbum(
-        albumImage, albumTitle, artistName, albumyear, songsCount);
+        albumImage, albumTitle, artistName, albumyear, songsCount, id);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => AlbumSongPage(
+              albumName: id,
+              handleBackFromAlbumSongPlayer:
+                  widget.handleBackFromAlbumSongPlayer)),
+    );
   }
 
   Future<void> fetchAlbum(List<String> albumNames) async {
@@ -123,8 +133,13 @@ class _AlbumPageState extends State<AlbumPage> {
                     print((album.imageURL));
                     return InkWell(
                       onTap: () {
-                        navigateToAlbumPage(album.imageURL, album.albumTitle,
-                            album.artistName, album.year, album.songsCount);
+                        navigateToAlbumPage(
+                            album.imageURL,
+                            album.albumTitle,
+                            album.artistName,
+                            album.year,
+                            album.songsCount,
+                            album.id);
                       },
                       child: GridTile(
                         child: Column(
