@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:musella/playlist/playlist_operation.dart';
 import 'package:musella/services/music_operations.dart';
 import 'package:musella/services/music_player_sevice.dart';
 import 'package:provider/provider.dart';
@@ -60,6 +61,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
 
     // Start the stopwatch to measure the time
     final stopwatch = Stopwatch()..start();
+    print("Audio URL is : ${widget.audioURL}");
 
     try {
       final track = await spotify.tracks.get(widget.audioURL);
@@ -72,6 +74,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
 
         var manifest = await yt.videos.streamsClient.getManifest(videoId);
         var audioId = manifest.audioOnly.first.url;
+        print("audio id is : $audioId");
         final playStopwatch = Stopwatch()..start();
         musicPlayerService.play(audioId.toString());
         print('Time to play the song: ${playStopwatch.elapsed}');
@@ -89,8 +92,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
       }
     } finally {
       yt.close();
-
-      // Stop the stopwatch and print the elapsed time
       print('Time to get the song from YouTube: ${stopwatch.elapsed}');
     }
 
@@ -126,8 +127,13 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
           IconButton(
             icon: Icon(Icons.playlist_add, color: Colors.white),
             onPressed: () {
-              // Implement the logic for adding to playlist here
-              // You may show a dialog, navigate to a new page, etc.
+              PlaylistOperations.showAddToPlaylistDialog(
+                context,
+                widget.imageURL,
+                widget.title,
+                widget.artist,
+                widget.audioURL,
+              );
             },
           ),
         ],

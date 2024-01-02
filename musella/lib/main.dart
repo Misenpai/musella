@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:musella/aboutme/about_me.dart';
 import 'package:musella/home/home.dart';
+import 'package:musella/models/playlist_model.dart';
 import 'package:musella/playlist/playlist.dart';
 import 'package:musella/services/album_user_operation.dart';
 import 'package:musella/services/artist_user_operations.dart';
@@ -15,8 +16,11 @@ void main() async {
   await ArtistUserOperations.loadArtistList();
   await MusicOperations.loadMusicList();
   await AlbumUserOperations.loadAlbumList();
-  runApp(ChangeNotifierProvider(
-    create: (context) => MusicPlayerService(),
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => MusicPlayerService()),
+      ChangeNotifierProvider(create: (context) => PlaylistsModel()),
+    ],
     child: MyApp(),
   ));
 }
