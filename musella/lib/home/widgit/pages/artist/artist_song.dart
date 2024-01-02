@@ -40,12 +40,12 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
         setState(() {
           songs = loadedSongs;
           songs.sort((a, b) => a.title.compareTo(b.title));
-          isLoading = false; // Set loading to false once songs are loaded
+          isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        isLoading = false; // Set loading to false in case of an error
+        isLoading = false;
       });
     }
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:musella/models/playlist_model.dart';
 import 'package:musella/models/playlist_play.dart';
 import 'package:musella/playlist/playlist.dart';
+import 'package:musella/services/playlist_user_operation.dart';
 import 'package:provider/provider.dart';
 
 class PlaylistOperations {
@@ -24,13 +25,29 @@ class PlaylistOperations {
             ),
             TextButton(
               onPressed: () {
-                Provider.of<PlaylistsModel>(context, listen: false).addPlaylist(
-                  PlaylistModel(
-                    name: controller.text,
-                    imageUrl:
-                        'default_playlist_image.png', // Replace with your image asset or URL
-                  ),
+                PlaylistModel newPlaylist = PlaylistModel(
+                  name: controller.text,
+                  imageUrl: 'default_playlist_image.png',
+                  songs: [], // Empty list of songs initially
                 );
+
+                Provider.of<PlaylistsModel>(context, listen: false)
+                    .addPlaylist(newPlaylist);
+
+                // Add the song to the newly created playlist
+                PlaylistPlayModel songToAdd = PlaylistPlayModel(
+                  imageURL,
+                  title,
+                  artist,
+                  audioURL,
+                );
+                Provider.of<PlaylistsModel>(context, listen: false)
+                    .addSongToPlaylist(
+                        Provider.of<PlaylistsModel>(context, listen: false)
+                            .playlists
+                            .indexOf(newPlaylist),
+                        songToAdd);
+
                 Navigator.of(context).pop();
               },
               child: Text('Create'),
@@ -43,10 +60,6 @@ class PlaylistOperations {
 
   static void showAddToPlaylistDialog(BuildContext context, String imageURL,
       String title, String artist, String audioURL) {
-    print("Image URL for showaddtoplaylist is : $imageURL");
-    print("title for showaddtoplaylist is : $title");
-    print("artist for showaddtoplaylist is : $artist");
-    print("audioURL for showaddtoplaylist is : $audioURL");
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -66,8 +79,7 @@ class PlaylistOperations {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Dismiss the dialog
-                addPlaylist(context, imageURL, title, artist,
-                    audioURL); // Invoke the playlist creation process
+                addPlaylist(context, imageURL, title, artist, audioURL);
               },
               child: const Text('Create New'),
             ),
@@ -84,10 +96,12 @@ class PlaylistOperations {
     String artist,
     String audioURL,
   ) {
+    PlaylistUserOperations.addSongDetails(imageURL, title, artist, audioURL);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => PlaylistPage(
-            songToAdd: PlaylistPlayModel(imageURL, title, artist, audioURL),),
+          songToAdd: PlaylistUserOperations.getPlaylistSongList(),
+        ),
       ),
     );
   }

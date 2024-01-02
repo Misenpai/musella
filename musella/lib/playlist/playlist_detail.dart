@@ -7,7 +7,7 @@ class PlaylistDetailPage extends StatefulWidget {
   final Function(String, String, String) handleBackFromMusicPlayer;
   final PlaylistModel playlist;
   final List<PlaylistPlayModel> items;
-  final PlaylistPlayModel? songToAdd;
+  final List<PlaylistPlayModel>? songToAdd;
 
   PlaylistDetailPage({
     required this.playlist,
@@ -20,9 +20,14 @@ class PlaylistDetailPage extends StatefulWidget {
   _PlaylistDetailPageState createState() => _PlaylistDetailPageState();
 }
 
-class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
+class _PlaylistDetailPageState extends State<PlaylistDetailPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.playlist.name),
@@ -31,11 +36,15 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
         itemCount: widget.items.length + (widget.songToAdd != null ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == widget.items.length && widget.songToAdd != null) {
-            final song = widget.songToAdd!;
+            final song = widget.songToAdd!.first;
+            print("In Playlist song it is : ${song.title}");
+          } else {
+            final song = widget.items[index];
             return ListTile(
               leading: Image.network(song.imagePath),
               title: Text(song.title),
-              subtitle: Text(song.artist),
+              subtitle:
+                  Text(song.artist), // Adjusted subtitle to include audioURL
               trailing: IconButton(
                 icon: Icon(
                   Icons.play_circle_fill,
@@ -57,38 +66,6 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage> {
                       ),
                     ),
                   );
-                },
-              ),
-              // leading: CircleAvatar(
-              //   backgroundImage: NetworkImage(song.imagePath),
-              //   onBackgroundImageError: (_, __) =>
-              //       AssetImage('assets/placeholder.png'),
-              // ),
-              // title: Text(song.title),
-              // subtitle: Text(song.artist),
-              // onTap: () {
-              //   // Logic to play music
-              // },
-            );
-          } else {
-            // Display the existing playlist items
-            final song = widget.items[index];
-            return ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(song.imagePath),
-                onBackgroundImageError: (_, __) =>
-                    AssetImage('assets/placeholder.png'),
-              ),
-              title: Text(song.title),
-              subtitle: Text(
-                  '${song.artist} | ${song.audioURL}'), // Adjusted subtitle to include audioURL
-              trailing: IconButton(
-                icon: Icon(
-                  Icons.play_circle_fill,
-                  color: Colors.orange,
-                ),
-                onPressed: () {
-                  // Logic to play music
                 },
               ),
             );

@@ -5,7 +5,7 @@ import 'package:musella/playlist/playlist_detail.dart';
 import 'package:provider/provider.dart';
 
 class PlaylistPage extends StatefulWidget {
-  final PlaylistPlayModel? songToAdd;
+  final List<PlaylistPlayModel>? songToAdd;
 
   PlaylistPage({Key? key, this.songToAdd}) : super(key: key);
   @override
@@ -13,6 +13,21 @@ class PlaylistPage extends StatefulWidget {
 }
 
 class _PlaylistPageState extends State<PlaylistPage> {
+  @override
+  void initState() {
+    super.initState();
+    final playlistsModel = Provider.of<PlaylistsModel>(context, listen: false);
+    playlistsModel.loadPlaylists();
+  }
+
+  void _addSongToSelectedPlaylist(int selectedIndex) {
+    if (widget.songToAdd != null && widget.songToAdd!.isNotEmpty) {
+      final song = widget.songToAdd!.first;
+      final playlistModel = Provider.of<PlaylistsModel>(context, listen: false);
+      playlistModel.addSongToPlaylist(selectedIndex, song);
+    }
+  }
+
   void _addPlaylist(BuildContext context) async {
     final TextEditingController controller = TextEditingController();
     await showDialog(
@@ -34,8 +49,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 Provider.of<PlaylistsModel>(context, listen: false).addPlaylist(
                   PlaylistModel(
                     name: controller.text,
-                    imageUrl:
-                        'default_playlist_image.png', // Replace with your image asset or URL
+                    imageUrl: 'default_playlist_image.png',
                   ),
                 );
                 Navigator.of(context).pop();
@@ -51,9 +65,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
   void handleBackFromMusicPlayer(String url, String title, String artist) {
     if (mounted) {
       setState(() {
-        widget.songToAdd?.imagePath = url;
-        widget.songToAdd?.title = title;
-        widget.songToAdd?.artist = artist;
+        widget.songToAdd?.first.audioURL = url;
+        widget.songToAdd?.first.title = title;
+        widget.songToAdd?.first.artist = artist;
       });
     }
   }
@@ -61,7 +75,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
   @override
   Widget build(BuildContext context) {
     final playlists = Provider.of<PlaylistsModel>(context).playlists;
-
     return Scaffold(
       appBar: AppBar(title: Text('Playlists')),
       body: ListView.builder(
@@ -69,7 +82,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         itemBuilder: (context, index) {
           final playlist = playlists[index];
           return Dismissible(
-            key: Key(playlist.name), // Ensure the key is unique for each item
+            key: Key(playlist.name),
             background: Container(
               color: Colors.red,
               alignment: Alignment.centerRight,
@@ -90,15 +103,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               title: Text(playlist.name),
               subtitle: Text('${playlist.songs.length} songs'),
               onTap: () {
-                print(
-                    "Song to add widgit contains image as  : ${widget.songToAdd?.imagePath}");
-                print(
-                    "Song to add widgit contains artist is : ${widget.songToAdd?.artist}");
-                print(
-                    "Song to add widgit contains title is : ${widget.songToAdd?.title}");
-                print(
-                    "Song to add widgit contains audioURL is : ${widget.songToAdd?.audioURL}");
-
+                _addSongToSelectedPlaylist(index);
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PlaylistDetailPage(
