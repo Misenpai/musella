@@ -87,6 +87,7 @@ class _AlbumSongPageState extends State<AlbumSongPage> {
                             title: song.title,
                             artist: song.artist,
                             audioURL: song.audioURL,
+                            albumSongs: songs,
                           ),
                         ),
                       );

@@ -5,12 +5,14 @@ import 'package:musella/widgit/music_player.dart';
 
 class ArtistSongPage extends StatefulWidget {
   final String artistName;
+  final List<SongsModel>? artistSongs;
   final Function(String, String, String) handleBackFromArtistSongPlayer;
 
   const ArtistSongPage({
     super.key,
     required this.artistName,
     required this.handleBackFromArtistSongPlayer,
+    this.artistSongs,
   });
 
   @override
@@ -86,6 +88,7 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
                             title: song.title,
                             artist: song.artist,
                             audioURL: song.audioURL,
+                            albumSongs: songs,
                           ),
                         ),
                       );
