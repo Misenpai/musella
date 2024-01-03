@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 import 'package:flutter/material.dart';
+import 'package:musella/models/playlist_play.dart';
 import 'package:musella/models/songs_model.dart';
 import 'package:musella/playlist/playlist_operation.dart';
 import 'package:musella/services/music_operations.dart';
@@ -17,6 +18,8 @@ class MusicPlayerPage extends StatefulWidget {
   String? artist;
   String? audioURL;
   final List<SongsModel>? albumSongs;
+  final List<PlaylistPlayModel>? playlistSongs;
+  int? currentPlaylistSongIndex;
 
   MusicPlayerPage({
     super.key,
@@ -25,6 +28,8 @@ class MusicPlayerPage extends StatefulWidget {
     this.artist,
     this.audioURL,
     this.albumSongs,
+    this.playlistSongs,
+    this.currentPlaylistSongIndex=0,
   });
 
   @override
@@ -122,6 +127,21 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
         widget.artist = nextSong.artist;
         widget.audioURL = nextSong.audioURL;
       });
+      await _fetchAndPlaySong(nextSong.audioURL);
+    }
+
+    if (widget.playlistSongs != null &&
+        currentSongIndex < widget.playlistSongs!.length - 1) {
+      int nextIndex = currentSongIndex + 1;
+      PlaylistPlayModel nextSong = widget.playlistSongs![nextIndex];
+      setState(() {
+        currentSongIndex = nextIndex;
+        widget.imageURL = nextSong.imagePath;
+        widget.title = nextSong.title;
+        widget.artist = nextSong.artist;
+        widget.audioURL = nextSong.audioURL;
+      });
+
       await _fetchAndPlaySong(nextSong.audioURL);
     }
   }

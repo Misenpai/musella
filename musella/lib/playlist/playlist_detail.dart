@@ -23,7 +23,7 @@ class PlaylistDetailPage extends StatefulWidget {
 
 class _PlaylistDetailPageState extends State<PlaylistDetailPage>
     with AutomaticKeepAliveClientMixin {
-      late List<SongsModel> songs;
+  late List<SongsModel> songs;
   @override
   bool get wantKeepAlive => true;
 
@@ -40,7 +40,7 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
           if (index == widget.items.length && widget.songToAdd != null) {
             final song = widget.songToAdd!.first;
             print("In Playlist song it is : ${song.title}");
-          } else { 
+          } else {
             final song = widget.items[index];
             return ListTile(
               leading: Image.network(song.imagePath),
@@ -65,6 +65,8 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
                         title: song.title,
                         artist: song.artist,
                         audioURL: song.audioURL,
+                        playlistSongs: widget.items,
+                        currentPlaylistSongIndex: index,
                       ),
                     ),
                   );

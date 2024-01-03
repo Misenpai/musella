@@ -20,7 +20,6 @@ class SongsAlbumModelOperations {
     try {
       for (var albumId in albumIds) {
         var detailedAlbum = await spotify.albums.get(albumId);
-        // Ensure that tracks is treated as an Iterable
         var tracks = detailedAlbum.tracks;
         if (tracks != null) {
           for (var track in tracks) {
