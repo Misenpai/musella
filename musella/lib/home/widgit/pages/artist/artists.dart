@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:musella/models/artist_model.dart';
 import 'package:musella/services/artist_model_operations.dart';
@@ -20,6 +18,7 @@ class _ArtistPageState extends State<ArtistPage> {
   late List<ArtistModel> displayedArtists;
 
   final TextEditingController searchController = TextEditingController();
+  bool isFetchingArtists = false;
 
   @override
   void initState() {
@@ -29,19 +28,31 @@ class _ArtistPageState extends State<ArtistPage> {
   }
 
   void filterArtists(String query) {
+    Set<String> uniqueArtists = Set<String>();
+
     setState(() {
       if (query.isEmpty) {
         displayedArtists = allArtists;
       } else {
-        displayedArtists = allArtists
-            .where((artist) =>
-                artist.artist.toLowerCase().contains(query.toLowerCase()))
-            .toList();
+        displayedArtists = allArtists.where((artist) {
+          bool isMatchingQuery =
+              artist.artist.toLowerCase().contains(query.toLowerCase());
+
+          // Check if artist is unique based on name and imageURL
+          bool isUniqueArtist =
+              uniqueArtists.add('${artist.artist}_${artist.imageURL}');
+
+          return isMatchingQuery && isUniqueArtist;
+        }).toList();
       }
     });
   }
 
   Future<void> fetchArtists(List<String> artistNames) async {
+    setState(() {
+      isFetchingArtists =
+          true; // Set to true when starting the fetching process
+    });
     final ArtistModelOperations artistOperations = ArtistModelOperations();
     final List<ArtistModel> artists =
         await artistOperations.getArtistModel(artistNames);
@@ -49,6 +60,7 @@ class _ArtistPageState extends State<ArtistPage> {
     setState(() {
       allArtists = artists;
       filterArtists(searchController.text);
+      isFetchingArtists = false;
     });
   }
 
@@ -90,7 +102,9 @@ class _ArtistPageState extends State<ArtistPage> {
                 ),
               ),
             ),
-            if (displayedArtists.isNotEmpty)
+            if (isFetchingArtists) // Show circular progress indicator while fetching
+              CircularProgressIndicator(),
+            if (!isFetchingArtists && displayedArtists.isNotEmpty)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -123,7 +137,7 @@ class _ArtistPageState extends State<ArtistPage> {
                   ),
                 ],
               ),
-            if (displayedArtists.isNotEmpty)
+            if (!isFetchingArtists && displayedArtists.isNotEmpty)
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),

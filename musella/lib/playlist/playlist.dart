@@ -75,12 +75,16 @@ class _PlaylistPageState extends State<PlaylistPage> {
   @override
   Widget build(BuildContext context) {
     final playlists = Provider.of<PlaylistsModel>(context).playlists;
+
     return Scaffold(
       appBar: AppBar(title: Text('Playlists')),
       body: ListView.builder(
         itemCount: playlists.length,
         itemBuilder: (context, index) {
           final playlist = playlists[index];
+          final firstSong =
+              playlist.songs.isNotEmpty ? playlist.songs.first : null;
+
           return Dismissible(
             key: Key(playlist.name),
             background: Container(
@@ -97,9 +101,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
                   .removePlaylist(index);
             },
             child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(playlist.imageUrl),
-              ),
+              leading: firstSong != null
+                  ? Image.network(firstSong.imagePath)
+                  : CircleAvatar(), // Use CircleAvatar if no song is present
               title: Text(playlist.name),
               subtitle: Text('${playlist.songs.length} songs'),
               onTap: () {
@@ -107,10 +111,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PlaylistDetailPage(
-                        playlist: playlist,
-                        items: playlist.songs,
-                        songToAdd: widget.songToAdd,
-                        handleBackFromMusicPlayer: handleBackFromMusicPlayer),
+                      playlist: playlist,
+                      items: playlist.songs,
+                      songToAdd: widget.songToAdd,
+                      handleBackFromMusicPlayer: handleBackFromMusicPlayer,
+                    ),
                   ),
                 );
               },

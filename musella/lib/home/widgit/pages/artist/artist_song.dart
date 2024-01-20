@@ -75,6 +75,7 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
                   trailing: IconButton(
                     icon: Icon(Icons.play_circle_fill, color: Colors.orange),
                     onPressed: () {
+                      final songIndex = index;
                       widget.handleBackFromArtistSongPlayer(
                         song.imageURL,
                         song.title,
@@ -89,6 +90,7 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
                             artist: song.artist,
                             audioURL: song.audioURL,
                             albumSongs: songs,
+                            currentSongIndex: songIndex,
                           ),
                         ),
                       );

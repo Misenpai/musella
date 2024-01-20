@@ -50,6 +50,7 @@ class RecentlyPlayed extends StatelessWidget {
                       final album = albums[index];
                       return GestureDetector(
                         onTap: () {
+                          final songIndex = index;
                           handleBackFromMusicPlayerRecentlyPlayed(
                             album.imagePath,
                             album.title,
@@ -62,6 +63,7 @@ class RecentlyPlayed extends StatelessWidget {
                                 title: album.title,
                                 artist: album.artist,
                                 audioURL: album.audioURL,
+                                currentSongIndex: songIndex,
                               ),
                             ),
                           );

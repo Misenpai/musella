@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:musella/models/playlist_play.dart';
 import 'package:musella/models/songs_model.dart';
 import 'package:musella/playlist/playlist_operation.dart';
@@ -19,7 +19,7 @@ class MusicPlayerPage extends StatefulWidget {
   String? audioURL;
   final List<SongsModel>? albumSongs;
   final List<PlaylistPlayModel>? playlistSongs;
-  int? currentPlaylistSongIndex;
+  int? currentSongIndex;
 
   MusicPlayerPage({
     super.key,
@@ -29,7 +29,7 @@ class MusicPlayerPage extends StatefulWidget {
     this.audioURL,
     this.albumSongs,
     this.playlistSongs,
-    this.currentPlaylistSongIndex=0,
+    this.currentSongIndex,
   });
 
   @override
@@ -41,7 +41,9 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
   Duration _postion = Duration.zero;
   late final StreamSubscription _playerStateChangedSubscription;
   late MusicPlayerService musicPlayerService;
-  int currentSongIndex = 0;
+  int currentAlbumSongIndex = 0;
+  int currentPlaylistSongIndex = 0;
+  bool isShuffling = false;
 
   @override
   void didChangeDependencies() {
@@ -53,15 +55,18 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
   @override
   void initState() {
     super.initState();
+    currentAlbumSongIndex = widget.currentSongIndex!;
+    currentPlaylistSongIndex = widget.currentSongIndex!;
     initializeMusic();
     final musicPlayerService =
         Provider.of<MusicPlayerService>(context, listen: false);
+
     _playerStateChangedSubscription =
-        musicPlayerService.player.onPlayerStateChanged.listen((state) {
-      setState(() {});
-    });
-    musicPlayerService.player.onPlayerComplete.listen((event) {
-      _playNextSong();
+        musicPlayerService.player.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        initializeMusic();
+        _playNextSong();
+      }
     });
   }
 
@@ -97,10 +102,10 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
         final playStopwatch = Stopwatch()..start();
         musicPlayerService.play(audioId.toString());
         print('Time to play the song: ${playStopwatch.elapsed}');
-        musicPlayerService.player.onPositionChanged.listen(
+        musicPlayerService.player.playerStateStream.listen(
           (position) {
             setState(() {
-              _postion = position;
+              _postion = musicPlayerService.player.position;
             });
           },
         );
@@ -115,11 +120,25 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
   }
 
   Future<void> _playNextSong() async {
-    if (widget.albumSongs != null &&
-        currentSongIndex < widget.albumSongs!.length - 1) {
-      currentSongIndex++;
-      SongsModel nextSong = widget.albumSongs![currentSongIndex];
-      print("Next song playing name is : ${nextSong.title}");
+    if (isShuffling) {
+      final musicPlayerService =
+          Provider.of<MusicPlayerService>(context, listen: false);
+      List<dynamic> shuffledSongs = [];
+      if (widget.albumSongs != null) {
+        shuffledSongs.addAll(widget.albumSongs!);
+      }
+      if (widget.playlistSongs != null) {
+        shuffledSongs.addAll(widget.playlistSongs!);
+      }
+
+      shuffledSongs.shuffle();
+      int currentIndex = shuffledSongs.indexWhere((song) =>
+          song.audioURL == widget.audioURL &&
+          song.imageURL == widget.imageURL &&
+          song.title == widget.title &&
+          song.artist == widget.artist);
+      int nextIndex = (currentIndex + 1) % shuffledSongs.length;
+      var nextSong = shuffledSongs[nextIndex];
 
       setState(() {
         widget.imageURL = nextSong.imageURL;
@@ -127,23 +146,98 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
         widget.artist = nextSong.artist;
         widget.audioURL = nextSong.audioURL;
       });
-      await _fetchAndPlaySong(nextSong.audioURL);
-    }
+      musicPlayerService.updateCurrentSong(
+        widget.imageURL,
+        widget.title,
+        widget.artist,
+        widget.audioURL,
+        currentPlaylistSongIndex,
+      );
+      await initializeMusic();
+      await _fetchAndPlaySong(widget.audioURL);
+    } else {
+      if (widget.albumSongs != null &&
+          currentAlbumSongIndex < widget.albumSongs!.length - 1) {
+        currentAlbumSongIndex++;
+        SongsModel nextSong = widget.albumSongs![currentAlbumSongIndex];
+        setState(() {
+          widget.imageURL = nextSong.imageURL;
+          widget.title = nextSong.title;
+          widget.artist = nextSong.artist;
+          widget.audioURL = nextSong.audioURL;
+        });
+        Provider.of<MusicPlayerService>(context, listen: false)
+            .updateCurrentSong(nextSong.imageURL, nextSong.title,
+                nextSong.artist, nextSong.audioURL, currentAlbumSongIndex);
+        await initializeMusic();
+        await _fetchAndPlaySong(nextSong.audioURL);
+      }
 
-    if (widget.playlistSongs != null &&
-        currentSongIndex < widget.playlistSongs!.length - 1) {
-      int nextIndex = currentSongIndex + 1;
-      PlaylistPlayModel nextSong = widget.playlistSongs![nextIndex];
+      if (widget.playlistSongs != null &&
+          currentPlaylistSongIndex < widget.playlistSongs!.length - 1) {
+        int nextIndex = currentPlaylistSongIndex + 1;
+        PlaylistPlayModel nextSong = widget.playlistSongs![nextIndex];
+        setState(() {
+          currentPlaylistSongIndex = nextIndex;
+          widget.imageURL = nextSong.imagePath;
+          widget.title = nextSong.title;
+          widget.artist = nextSong.artist;
+          widget.audioURL = nextSong.audioURL;
+        });
+        Provider.of<MusicPlayerService>(context, listen: false)
+            .updateCurrentSong(nextSong.imagePath, nextSong.title,
+                nextSong.artist, nextSong.audioURL, currentPlaylistSongIndex);
+        await initializeMusic();
+        await _fetchAndPlaySong(nextSong.audioURL);
+      }
+    }
+  }
+
+  Future<void> _playPreviousSong() async {
+    if (widget.albumSongs != null && currentAlbumSongIndex > 0) {
+      currentAlbumSongIndex--;
+      SongsModel previousSong = widget.albumSongs![currentAlbumSongIndex];
+
       setState(() {
-        currentSongIndex = nextIndex;
-        widget.imageURL = nextSong.imagePath;
-        widget.title = nextSong.title;
-        widget.artist = nextSong.artist;
-        widget.audioURL = nextSong.audioURL;
+        widget.imageURL = previousSong.imageURL;
+        widget.title = previousSong.title;
+        widget.artist = previousSong.artist;
+        widget.audioURL = previousSong.audioURL;
       });
+      Provider.of<MusicPlayerService>(context, listen: false).updateCurrentSong(
+          previousSong.imageURL,
+          previousSong.title,
+          previousSong.artist,
+          previousSong.audioURL,
+          currentAlbumSongIndex);
+      await initializeMusic();
+      await _fetchAndPlaySong(previousSong.audioURL);
+    } else if (widget.playlistSongs != null && currentPlaylistSongIndex > 0) {
+      currentPlaylistSongIndex--;
+      PlaylistPlayModel previousSong =
+          widget.playlistSongs![currentPlaylistSongIndex];
 
-      await _fetchAndPlaySong(nextSong.audioURL);
+      setState(() {
+        widget.imageURL = previousSong.imagePath;
+        widget.title = previousSong.title;
+        widget.artist = previousSong.artist;
+        widget.audioURL = previousSong.audioURL;
+      });
+      Provider.of<MusicPlayerService>(context, listen: false).updateCurrentSong(
+          previousSong.imagePath,
+          previousSong.title,
+          previousSong.artist,
+          previousSong.audioURL,
+          currentPlaylistSongIndex);
+      await initializeMusic();
+      await _fetchAndPlaySong(previousSong.audioURL);
     }
+  }
+
+  Future<void> _shuffleSongs() async {
+    setState(() {
+      isShuffling = !isShuffling;
+    });
   }
 
   @override
@@ -203,20 +297,36 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
             child: Image.network(widget.imageURL ?? '', fit: BoxFit.cover),
           ),
           Spacer(),
-          StreamBuilder(
-            stream: musicPlayerService.player.onPlayerStateChanged,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Spacer(),
+                IconButton(
+                  icon: Icon(Icons.shuffle,
+                      color: isShuffling ? Colors.orange : Colors.white),
+                  onPressed: () {
+                    _shuffleSongs();
+                  },
+                ),
+              ],
+            ),
+          ),
+          StreamBuilder<Duration>(
+            stream: musicPlayerService.player.positionStream,
             builder: (context, snapshot) {
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: ProgressBar(
-                  progress: _postion,
+                  progress: snapshot.data!,
                   total: duration ?? const Duration(minutes: 4),
                   onSeek: (duration) {
                     musicPlayerService.player.seek(duration);
                   },
                   timeLabelTextStyle: TextStyle(color: Colors.white),
                   thumbColor: Colors.white,
-                  progressBarColor: Colors.white,
+                  progressBarColor: Colors.orange,
                   bufferedBarColor: Colors.white38,
                   baseBarColor: Colors.white10,
                 ),
@@ -227,6 +337,13 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              IconButton(
+                icon:
+                    Icon(Icons.skip_previous, color: Colors.white, size: 32.0),
+                onPressed: () {
+                  _playPreviousSong();
+                },
+              ),
               IconButton(
                 icon: Icon(Icons.replay_5, color: Colors.white, size: 32.0),
                 onPressed: () {
@@ -257,6 +374,12 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
                   musicPlayerService.player.seek(
                     _postion + Duration(seconds: 10),
                   );
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.skip_next, color: Colors.white, size: 32.0),
+                onPressed: () {
+                  _playNextSong();
                 },
               ),
             ],

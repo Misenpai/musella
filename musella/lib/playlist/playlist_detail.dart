@@ -53,6 +53,7 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
                   color: Colors.orange,
                 ),
                 onPressed: () {
+                  final songIndex = index;
                   widget.handleBackFromMusicPlayer(
                     song.imagePath,
                     song.title,
@@ -66,7 +67,7 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
                         artist: song.artist,
                         audioURL: song.audioURL,
                         playlistSongs: widget.items,
-                        currentPlaylistSongIndex: index,
+                        currentSongIndex: songIndex,
                       ),
                     ),
                   );

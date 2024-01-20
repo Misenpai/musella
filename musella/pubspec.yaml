@@ -50,6 +50,10 @@ dependencies:
   sqflite: ^2.3.0
   path_provider: ^2.1.1
   shared_preferences: ^2.2.2
+  flutter_local_notifications: ^9.9.1
+  audio_service: ^0.18.12
+  just_audio: ^0.9.36
+  rxdart: ^0.27.7
 
 dev_dependencies:
   flutter_test:

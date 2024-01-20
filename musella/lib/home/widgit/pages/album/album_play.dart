@@ -41,12 +41,12 @@ class _AlbumSongPageState extends State<AlbumSongPage> {
         setState(() {
           songs = loadedSongs;
           songs.sort((a, b) => a.title.compareTo(b.title));
-          isLoading = false; // Set loading to false once songs are loaded
+          isLoading = false; 
         });
       }
     } catch (e) {
       setState(() {
-        isLoading = false; // Set loading to false in case of an error
+        isLoading = false; 
       });
     }
   }
@@ -74,6 +74,7 @@ class _AlbumSongPageState extends State<AlbumSongPage> {
                   trailing: IconButton(
                     icon: Icon(Icons.play_circle_fill, color: Colors.orange),
                     onPressed: () {
+                      final songIndex = index;
                       widget.handleBackFromAlbumSongPlayer(
                         song.imageURL,
                         song.title,
@@ -88,6 +89,7 @@ class _AlbumSongPageState extends State<AlbumSongPage> {
                             artist: song.artist,
                             audioURL: song.audioURL,
                             albumSongs: songs,
+                            currentSongIndex: songIndex,
                           ),
                         ),
                       );

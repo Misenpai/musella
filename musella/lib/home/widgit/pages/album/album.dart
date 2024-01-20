@@ -17,6 +17,7 @@ class _AlbumPageState extends State<AlbumPage> {
   late List<AlbumModel> allAlbum;
   late List<AlbumModel> displayedArtistAlbum;
   final TextEditingController searchController = TextEditingController();
+  bool isLoading = false; // New variable to track loading state
 
   @override
   void initState() {
@@ -53,13 +54,24 @@ class _AlbumPageState extends State<AlbumPage> {
   }
 
   Future<void> fetchAlbum(List<String> albumNames) async {
-    final AlbumModelOperations albumModelOperations = AlbumModelOperations();
-    final List<AlbumModel> albums =
-        await albumModelOperations.getArtistModel(albumNames);
     setState(() {
-      allAlbum = albums;
-      filterAlbum(searchController.text);
+      isLoading = true; // Set loading state to true when fetching starts
     });
+
+    try {
+      final AlbumModelOperations albumModelOperations = AlbumModelOperations();
+      final List<AlbumModel> albums =
+          await albumModelOperations.getArtistModel(albumNames);
+      setState(() {
+        allAlbum = albums;
+        filterAlbum(searchController.text);
+      });
+    } finally {
+      setState(() {
+        isLoading =
+            false; // Set loading state to false when fetching is complete
+      });
+    }
   }
 
   @override
@@ -87,7 +99,9 @@ class _AlbumPageState extends State<AlbumPage> {
                 ),
               ),
             ),
-            if (displayedArtistAlbum.isNotEmpty)
+            if (isLoading) // Show circular progress indicator while loading
+              CircularProgressIndicator()
+            else if (displayedArtistAlbum.isNotEmpty)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
