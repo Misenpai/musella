@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:musella/models/music.dart';
 import 'package:musella/services/music_operations.dart';
+import 'package:musella/services/music_player_sevice.dart';
 import 'package:musella/widgit/music_player.dart';
+import 'package:provider/provider.dart';
 
 class RecentlyPlayed extends StatelessWidget {
   final Function(String, String, String)
@@ -14,6 +16,8 @@ class RecentlyPlayed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Music> albums = MusicOperations.getMusicList();
+    final musicPlayerService =
+        Provider.of<MusicPlayerService>(context, listen: false);
 
     return SingleChildScrollView(
       child: Column(
@@ -56,15 +60,19 @@ class RecentlyPlayed extends StatelessWidget {
                             album.title,
                             album.artist,
                           );
+
+                          musicPlayerService.updateCurrentSong(
+                            imageURL: album.imagePath,
+                            title: album.title,
+                            artist: album.artist,
+                            audioURL: album.audioURL,
+                            songIndex: songIndex,
+                          );
+                          musicPlayerService.initializeMusic();
+
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => MusicPlayerPage(
-                                imageURL: album.imagePath,
-                                title: album.title,
-                                artist: album.artist,
-                                audioURL: album.audioURL,
-                                currentSongIndex: songIndex,
-                              ),
+                              builder: (context) => MusicPlayerPage(),
                             ),
                           );
                         },

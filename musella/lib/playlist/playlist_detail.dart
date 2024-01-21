@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:musella/models/playlist_model.dart';
 import 'package:musella/models/playlist_play.dart';
 import 'package:musella/models/songs_model.dart';
+import 'package:musella/services/music_player_sevice.dart';
 import 'package:musella/widgit/music_player.dart';
+import 'package:provider/provider.dart';
 
 class PlaylistDetailPage extends StatefulWidget {
   final Function(String, String, String) handleBackFromMusicPlayer;
@@ -29,6 +31,8 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    final musicPlayerService =
+        Provider.of<MusicPlayerService>(context, listen: false);
     super.build(context);
     return Scaffold(
       appBar: AppBar(
@@ -59,16 +63,19 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
                     song.title,
                     song.artist,
                   );
+
+                  musicPlayerService.updateCurrentSong(
+                    imageURL: song.imagePath,
+                    title: song.title,
+                    artist: song.artist,
+                    audioURL: song.audioURL,
+                    playlistSongs: widget.items,
+                    songIndex: songIndex,
+                  );
+                  musicPlayerService.initializeMusic();
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => MusicPlayerPage(
-                        imageURL: song.imagePath,
-                        title: song.title,
-                        artist: song.artist,
-                        audioURL: song.audioURL,
-                        playlistSongs: widget.items,
-                        currentSongIndex: songIndex,
-                      ),
+                      builder: (context) => MusicPlayerPage(),
                     ),
                   );
                 },

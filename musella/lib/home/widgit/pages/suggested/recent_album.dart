@@ -50,7 +50,8 @@ class AlbumRecent extends StatelessWidget {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => AlbumSongPage(
                                     albumName: album.id,
-                                    handleBackFromAlbumSongPlayer: handleBackFromAlbumPlayerMostPlayed,
+                                    handleBackFromAlbumSongPlayer:
+                                        handleBackFromAlbumPlayerMostPlayed,
                                   )));
                         },
                         child: Padding(

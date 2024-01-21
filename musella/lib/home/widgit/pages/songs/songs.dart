@@ -8,8 +8,7 @@ import 'package:provider/provider.dart';
 class SongsPage extends StatefulWidget {
   final Function(String, String, String) handleBackFromMusicPlayer;
 
-  const SongsPage({Key? key, required this.handleBackFromMusicPlayer})
-      : super(key: key);
+  const SongsPage({super.key, required this.handleBackFromMusicPlayer});
 
   @override
   _SongsPageState createState() => _SongsPageState();
@@ -23,8 +22,6 @@ class _SongsPageState extends State<SongsPage> {
   final TextEditingController searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
-  bool isLoading = false; // Added variable to track loading state
-
   @override
   void initState() {
     super.initState();
@@ -35,23 +32,13 @@ class _SongsPageState extends State<SongsPage> {
   Future<void> fetchSongs(List<String> songNames) async {
     if (songNames.isNotEmpty) {
       final SongsModelOperations songsOperations = SongsModelOperations();
-      try {
-        setState(() {
-          isLoading = true; // Set loading to true when fetching
-        });
+      final List<SongsModel> loadedSongs =
+          await songsOperations.getSongsModel(songNames);
 
-        final List<SongsModel> loadedSongs =
-            await songsOperations.getSongsModel(songNames);
-
-        setState(() {
-          songs = loadedSongs;
-          filterSongs(searchController.text);
-        });
-      } finally {
-        setState(() {
-          isLoading = true; // Set loading to false after fetching
-        });
-      }
+      setState(() {
+        songs = loadedSongs;
+        filterSongs(searchController.text);
+      });
     }
   }
 
@@ -84,10 +71,11 @@ class _SongsPageState extends State<SongsPage> {
     fetchSongs([]);
   }
 
-  // ... Previous code
-
   @override
   Widget build(BuildContext context) {
+    final musicPlayerService =
+        Provider.of<MusicPlayerService>(context, listen: false);
+
     return GestureDetector(
       onTap: () {
         _searchFocusNode.unfocus(); // Unfocus the focus node
@@ -113,91 +101,80 @@ class _SongsPageState extends State<SongsPage> {
                 ),
               ),
             ),
-            if (isLoading)
-              // Display circular progress indicator while loading
-              Center(
-                child: CircularProgressIndicator(),
-              )
-            else if (displayedSongs.isNotEmpty)
-              // Display search results if available
-              Expanded(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            if (displayedSongs.isNotEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${displayedSongs.length} Songs',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {},
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '${displayedSongs.length} Songs',
+                          'Ascending',
                           style: TextStyle(
-                            fontSize: 20,
+                            color: Colors.orange,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
                           ),
                         ),
-                        InkWell(
-                          onTap: () {},
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Ascending',
-                                style: TextStyle(
-                                  color: Colors.orange,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Icon(
-                                Icons.arrow_downward,
-                                color: Colors.orange,
-                              ),
-                            ],
-                          ),
+                        Icon(
+                          Icons.arrow_downward,
+                          color: Colors.orange,
                         ),
                       ],
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: ListView.builder(
-                          itemCount: displayedSongs.length,
-                          itemBuilder: (context, index) {
-                            final song = displayedSongs[index];
-                            return ListTile(
-                              leading: Image.network(song.imageURL),
-                              title: Text(song.title),
-                              subtitle:
-                                  Text('${song.artist} | ${song.duration}'),
-                              trailing: IconButton(
-                                icon: Icon(
-                                  Icons.play_circle_fill,
-                                  color: Colors.orange,
-                                ),
-                                onPressed: () {
-                                  final songIndex = index;
-                                  widget.handleBackFromMusicPlayer(
-                                    song.imageURL,
-                                    song.title,
-                                    song.artist,
-                                  );
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => MusicPlayerPage(
-                                        imageURL: song.imageURL,
-                                        title: song.title,
-                                        artist: song.artist,
-                                        audioURL: song.audioURL,
-                                        currentSongIndex: songIndex,
-                                      ),
-                                    ),
-                                  );
-                                },
+                  ),
+                ],
+              ),
+            if (displayedSongs.isNotEmpty)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListView.builder(
+                    itemCount: displayedSongs.length,
+                    itemBuilder: (context, index) {
+                      final song = displayedSongs[index];
+                      return ListTile(
+                        leading: Image.network(song.imageURL),
+                        title: Text(song.title),
+                        subtitle: Text('${song.artist} | ${song.duration}'),
+                        trailing: IconButton(
+                          icon: Icon(
+                            Icons.play_circle_fill,
+                            color: Colors.orange,
+                          ),
+                          onPressed: () {
+                            widget.handleBackFromMusicPlayer(
+                              song.imageURL,
+                              song.title,
+                              song.artist,
+                            );
+
+                            musicPlayerService.updateCurrentSong(
+                              imageURL: song.imageURL,
+                              title: song.title,
+                              artist: song.artist,
+                              audioURL: song.audioURL,
+                            );
+                            musicPlayerService.initializeMusic();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => MusicPlayerPage(),
                               ),
                             );
                           },
                         ),
-                      ),
-                    ),
-                  ],
+                      );
+                    },
+                  ),
                 ),
               ),
           ],

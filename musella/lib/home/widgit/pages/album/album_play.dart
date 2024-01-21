@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:musella/models/songs_model.dart';
+import 'package:musella/services/music_player_sevice.dart';
 import 'package:musella/services/songs_album_model.dart';
 import 'package:musella/widgit/music_player.dart';
+import 'package:provider/provider.dart';
 
 class AlbumSongPage extends StatefulWidget {
   final String albumName;
@@ -41,18 +43,20 @@ class _AlbumSongPageState extends State<AlbumSongPage> {
         setState(() {
           songs = loadedSongs;
           songs.sort((a, b) => a.title.compareTo(b.title));
-          isLoading = false; 
+          isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        isLoading = false; 
+        isLoading = false;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final musicPlayerService =
+        Provider.of<MusicPlayerService>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: isLoading
@@ -80,17 +84,20 @@ class _AlbumSongPageState extends State<AlbumSongPage> {
                         song.title,
                         song.artist,
                       );
-                      // Navigate to MusicPlayerPage if needed
+
+                      musicPlayerService.updateCurrentSong(
+                        imageURL: song.imageURL,
+                        title: song.title,
+                        artist: song.artist,
+                        audioURL: song.audioURL,
+                        albumSongs: songs,
+                        songIndex: songIndex,
+                      );
+                      musicPlayerService.initializeMusic();
+
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => MusicPlayerPage(
-                            imageURL: song.imageURL,
-                            title: song.title,
-                            artist: song.artist,
-                            audioURL: song.audioURL,
-                            albumSongs: songs,
-                            currentSongIndex: songIndex,
-                          ),
+                          builder: (context) => MusicPlayerPage(),
                         ),
                       );
                     },

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:musella/services/music_player_sevice.dart';
-import 'package:musella/widgit/music_player.dart';
 import 'package:provider/provider.dart';
 
 class MiniPlayer extends StatelessWidget {
