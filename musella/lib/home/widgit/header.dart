@@ -9,6 +9,7 @@ class AppHeader extends StatefulWidget {
       required this.pageController});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AppHeaderState createState() => _AppHeaderState();
 }
 

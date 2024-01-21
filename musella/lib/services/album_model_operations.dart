@@ -1,3 +1,4 @@
+import 'package:musella/api/credential.dart';
 import 'package:musella/models/album_model.dart';
 import 'package:spotify/spotify.dart';
 
@@ -6,12 +7,8 @@ class AlbumModelOperations {
   late List<String> albumNames;
 
   AlbumModelOperations() {
-    var keyMap = {
-      "id": "4c6480b9dad641e0949b71b13d0ca7c0",
-      "secret": "d07d2808092846ae9a452961db39b7f2"
-    };
-
-    var credentials = SpotifyApiCredentials(keyMap['id'], keyMap['secret']);
+    var credentials = SpotifyApiCredentials(SpotifyCredentials.clientId,
+      SpotifyCredentials.clientSecret,);
     spotify = SpotifyApi(credentials);
   }
 
@@ -21,12 +18,10 @@ class AlbumModelOperations {
       for (var albumName in albumNames) {
         var searchResults = await spotify.search.get(albumName).first();
 
-        print('Search Result: $searchResults');
         for (var page in searchResults) {
           for (var item in page.items!) {
             if (item is AlbumSimple) {
               var detailedAlbum = await spotify.albums.get(item.id ?? '');
-              print("Detailed Album is : $detailedAlbum");
               String imageURL = item.images?.first.url ?? "No image";
               String albumTitle = item.name ?? "No title";
               String artistName = item.artists?.first.name ?? '';
@@ -42,8 +37,8 @@ class AlbumModelOperations {
           }
         }
       }
+    // ignore: empty_catches
     } catch (e) {
-      print('Error fetching data: $e');
     }
     return albums;
   }

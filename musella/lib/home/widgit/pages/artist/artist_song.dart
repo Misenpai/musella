@@ -18,6 +18,7 @@ class ArtistSongPage extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _ArtistSongPageState createState() => _ArtistSongPageState();
 }
 
@@ -38,7 +39,6 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
       final loadedSongs =
           await songsOperations.getSongsModel([widget.artistName]);
 
-      print("artist name is : ${widget.artistName}");
 
       if (mounted) {
         setState(() {

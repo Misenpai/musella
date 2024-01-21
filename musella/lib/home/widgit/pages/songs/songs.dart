@@ -11,6 +11,7 @@ class SongsPage extends StatefulWidget {
   const SongsPage({super.key, required this.handleBackFromMusicPlayer});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SongsPageState createState() => _SongsPageState();
 }
 

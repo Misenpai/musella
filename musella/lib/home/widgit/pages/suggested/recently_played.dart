@@ -126,12 +126,12 @@ class RecentlyPlayed extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Image.network(
-                'https://www.lofiandgames.com/share-dinosaur.png',
+                'https://i.pinimg.com/564x/43/f9/21/43f921fff911cfa8aa64c636931e3880.jpg',
                 height: 140,
               ),
               SizedBox(height: 16),
               Text(
-                'No Recently Played',
+                'Play a song first',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,

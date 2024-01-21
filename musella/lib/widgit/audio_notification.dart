@@ -1,80 +1,76 @@
-// import 'package:flutter/material.dart';
-// import 'package:just_audio/just_audio.dart';
-// import 'package:rxdart/rxdart.dart';
-// import 'package:audio_service/audio_service.dart';
-// import 'package:audio_session/audio_session.dart';
-// import 'package:flutter/services.dart';
-// import 'package:musella/services/music_player_sevice.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:musella/services/music_player_sevice.dart';
 
-// void main() {
-//   runApp(const MyApp());
-// }
+// Ensure you initialize this plugin in your main() function
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
+void initNotifications() async {
+  // Configure notification channels (required for Android 8.0+)
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'music_playback',
+    'Music Playback',
+    description: 'Notifications for music playback control',
+    importance: Importance.low, // Adjust importance as needed
+  );
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Notification Player',
-//       home: NotificationPlayer(),
-//     );
-//   }
-// }
+  // Initialize the plugin for both Android and iOS
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    iOS: IOSInitializationSettings(),
+  );
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+}
 
-// class NotificationPlayer extends StatefulWidget {
-//   @override
-//   _NotificationPlayerState createState() => _NotificationPlayerState();
-// }
+void displayNowPlayingNotification() async {
+  final MusicPlayerService musicPlayerService = MusicPlayerService();
+  final bool isPlaying = musicPlayerService.isPlaying;
 
-// class _NotificationPlayerState extends State<NotificationPlayer> {
-//   late AudioPlayer _player;
-//   late AudioService _audioHandler;
-//   final _mediaItemExpando = Expando<MediaItem>();
+  final String title = musicPlayerService.currentTitle ?? 'Unknown Title';
+  final String artist = musicPlayerService.currentArtist ?? 'Unknown Artist';
+  final String imageUrl = musicPlayerService.currentImageURL ?? '';
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _player = AudioPlayer();
-//     _audioHandler = await AudioService.init(
-//       builder: () => AudioPlayerHandler(_player),
-//       config: AudioServiceConfig(
-//         androidNotificationChannelId: 'com.example.app_name',
-//         androidNotificationChannelName: 'App Name',
-//         androidNotificationOngoing: true,
-//       ),
-//     );
+  // Assuming you have play and pause icons in your drawable resources
+  final DrawableResourceAndroidBitmap playIcon =
+      DrawableResourceAndroidBitmap('@drawable/ic_play');
+  final DrawableResourceAndroidBitmap pauseIcon =
+      DrawableResourceAndroidBitmap('@drawable/ic_pause');
 
-//     // Get the current song information from MusicPlayerService
-//     _audioHandler.currentMediaItemStream.listen((mediaItem) {
-//       // Update notification with the current song information
-//       _audioHandler.setMediaItem(mediaItem);
-//     });
-//   }
+  // Determine the correct icon to use
+  final DrawableResourceAndroidBitmap icon = isPlaying ? pauseIcon : playIcon;
 
-//   // ... other methods for controlling playback
+  final androidDetails = AndroidNotificationDetails(
+    'music_playback',
+    'Music Playback',
+    channelDescription: 'Notifications for currently playing songs',
+    importance: Importance.low,
+    priority: Priority.low,
+    ongoing: true,
+    showProgress: true,
+    maxProgress: 100,
+    largeIcon: icon,
+    styleInformation: BigPictureStyleInformation(
+      DrawableResourceAndroidBitmap(imageUrl),
+      contentTitle: title,
+      summaryText: artist,
+      htmlFormatContentTitle: true,
+      htmlFormatSummaryText: true,
+      largeIcon: DrawableResourceAndroidBitmap(imageUrl),
+      hideExpandedLargeIcon: true,
+    ),
+  );
 
-//   @override
-//   void dispose() {
-//     _audioHandler.stop();
-//     super.dispose();
-//   }
+  final notificationDetails = NotificationDetails(android: androidDetails);
 
-//   @override
-//   Widget build(BuildContext context) {
-//     // ... UI elements for controlling playback
-//   }
-// }
-
-// class AudioPlayerHandler extends BaseAudioHandler {
-//   final AudioPlayer _player;
-
-//   AudioPlayerHandler(this._player);
-
-//   @override
-//   Future<void> setMediaItem(MediaItem mediaItem) async {
-//     // ... set the media item and update notification metadata
-//   }
-
-//   // ... other methods for handling audio playback
-// }
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    title,
+    artist,
+    notificationDetails,
+    payload: 'NowPlaying',
+  );
+}

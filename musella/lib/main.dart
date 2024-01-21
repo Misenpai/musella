@@ -9,11 +9,13 @@ import 'package:musella/services/artist_user_operations.dart';
 import 'package:musella/services/music_operations.dart';
 import 'package:musella/services/music_player_sevice.dart';
 import 'package:musella/services/playlist_user_operation.dart';
+import 'package:musella/widgit/audio_notification.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  initNotifications();
   await ArtistUserOperations.loadArtistList();
   await MusicOperations.loadMusicList();
   await AlbumUserOperations.loadAlbumList();

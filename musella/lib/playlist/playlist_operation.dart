@@ -28,13 +28,12 @@ class PlaylistOperations {
                 PlaylistModel newPlaylist = PlaylistModel(
                   name: controller.text,
                   imageUrl: 'default_playlist_image.png',
-                  songs: [], // Empty list of songs initially
+                  songs: [],
                 );
 
                 Provider.of<PlaylistsModel>(context, listen: false)
                     .addPlaylist(newPlaylist);
 
-                // Add the song to the newly created playlist
                 PlaylistPlayModel songToAdd = PlaylistPlayModel(
                   imageURL,
                   title,
@@ -78,7 +77,7 @@ class PlaylistOperations {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
+                Navigator.of(context).pop();
                 addPlaylist(context, imageURL, title, artist, audioURL);
               },
               child: const Text('Create New'),

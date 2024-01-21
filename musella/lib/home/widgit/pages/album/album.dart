@@ -7,6 +7,7 @@ import 'package:musella/services/album_user_operation.dart';
 
 class AlbumPage extends StatefulWidget {
   final Function(String, String, String) handleBackFromAlbumSongPlayer;
+  // ignore: use_key_in_widget_constructors
   const AlbumPage({Key? key, required this.handleBackFromAlbumSongPlayer});
 
   @override
@@ -144,7 +145,6 @@ class _AlbumPageState extends State<AlbumPage> {
                   itemCount: displayedArtistAlbum.length,
                   itemBuilder: (context, index) {
                     final album = displayedArtistAlbum[index];
-                    print((album.imageURL));
                     return InkWell(
                       onTap: () {
                         navigateToAlbumPage(
@@ -166,9 +166,8 @@ class _AlbumPageState extends State<AlbumPage> {
                                     image:
                                         NetworkImage(album.imageURL, scale: 1),
                                     fit: BoxFit.cover,
+                                    // ignore: avoid_types_as_parameter_names, non_constant_identifier_names
                                     onError: (exception, StackTrace) {
-                                      print(
-                                          "Image failed to load : $exception");
                                     },
                                   ),
                                   borderRadius: BorderRadius.circular(16),

@@ -17,13 +17,11 @@ class ArtistModelOperations {
       for (var artistName in artistNames) {
         await _handleRateLimit(() async {
           var searchResults = await spotify.search.get(artistName).first();
-          print('Search Result: ${searchResults.first}');
 
           for (var page in searchResults) {
             for (var item in page.items!) {
               if (item is Artist && item.id != null) {
                 String imageURL = item.images?.first.url ?? 'default_image_url';
-                print("image URl is : $imageURL");
                 String artist = item.name ?? 'Unknown Artist';
 
                 artists.add(ArtistModel(
@@ -35,6 +33,7 @@ class ArtistModelOperations {
           }
         });
       }
+    // ignore: empty_catches
     } catch (e) {}
 
     return artists;

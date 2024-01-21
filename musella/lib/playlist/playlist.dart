@@ -7,8 +7,10 @@ import 'package:provider/provider.dart';
 class PlaylistPage extends StatefulWidget {
   final List<PlaylistPlayModel>? songToAdd;
 
+  // ignore: prefer_const_constructors_in_immutables, use_super_parameters
   PlaylistPage({Key? key, this.songToAdd}) : super(key: key);
   @override
+  // ignore: library_private_types_in_public_api
   _PlaylistPageState createState() => _PlaylistPageState();
 }
 

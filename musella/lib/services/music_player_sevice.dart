@@ -1,3 +1,5 @@
+// ignore_for_file: library_prefixes, empty_catches
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -62,7 +64,6 @@ class MusicPlayerService with ChangeNotifier {
     currentPlaylistSongIndex = currentSongIndex!;
     albumSongtemp = albumSong;
     playlistSongtemp = playlistSong;
-    print("playlistsongtemp is : $playlistSongtemp");
     MusicOperations.addMusic(
       currentImageURL ?? '',
       currentTitle ?? '',
@@ -78,7 +79,6 @@ class MusicPlayerService with ChangeNotifier {
         "4c6480b9dad641e0949b71b13d0ca7c0", "d07d2808092846ae9a452961db39b7f2");
     final spotify = Spotify.SpotifyApi(credentials);
     final yt = YoutubeExplode();
-    print("Audio URL is : ${currentAudioURL}");
     try {
       final track = await spotify.tracks.get(audioURL ?? '');
       String? songname = track.name;
@@ -89,13 +89,11 @@ class MusicPlayerService with ChangeNotifier {
         duration = video.duration;
         var manifest = await yt.videos.streamsClient.getManifest(videoId);
         var audioId = manifest.audioOnly.first.url;
-        play(audioId.toString());
-        player.playerStateStream.listen(
-          (position) {
-            positions = player.position;
-          },
-        );
-        positions = Duration.zero;
+        await play(audioId.toString());
+        notifyListeners();
+        await player.playerStateStream.firstWhere((position) =>
+            position.processingState == ProcessingState.completed);
+        await playNextSong();
       }
     } finally {
       yt.close();
@@ -111,12 +109,9 @@ class MusicPlayerService with ChangeNotifier {
         } else if (playlistSongtemp != null) {
           shuffledSongs.addAll(playlistSongtemp!);
         }
-        print("shuffle playlist is : $shuffledSongs");
 
         shuffledSongs.shuffle();
 
-        print(
-            "Current Song - URL: $currentAudioURL, Title: $currentTitle, Artist: $currentArtist");
 
         int currentIndex = shuffledSongs.indexWhere((song) =>
             (song is SongsModel &&
@@ -130,10 +125,8 @@ class MusicPlayerService with ChangeNotifier {
                 song.title == currentTitle &&
                 song.artist == currentArtist));
 
-        print("Current Index: $currentIndex");
 
         if (currentIndex == -1) {
-          print("Error: Current song not found in shuffled list.");
           return;
         }
 
@@ -162,16 +155,11 @@ class MusicPlayerService with ChangeNotifier {
 
         await initializeMusic();
         await fetchAndPlaySong(currentAudioURL);
-
-        print(
-            "Next Song - URL: $currentAudioURL, Title: $currentTitle, Artist: $currentArtist");
       } catch (e) {
-        print("Error during song shuffling: $e");
       }
     } else {
       if (albumSongtemp != null &&
           currentAlbumSongIndex < albumSongtemp!.length - 1) {
-        print("Playing next song from album : $currentAlbumSongIndex");
         currentAlbumSongIndex++;
         SongsModel nextSong = albumSongtemp![currentAlbumSongIndex];
         currentImageURL = nextSong.imageURL;
@@ -210,9 +198,6 @@ class MusicPlayerService with ChangeNotifier {
         );
         await initializeMusic();
         await fetchAndPlaySong(nextSong.audioURL);
-      } else {
-        print("No more songs to play");
-        print("albumsong is : ${albumSongtemp}");
       }
     }
   }
@@ -262,6 +247,7 @@ class MusicPlayerService with ChangeNotifier {
 
   Future<void> shuffleSongs() async {
     isShuffling = !isShuffling;
+    notifyListeners();
   }
 
   Future<void> play(String url) async {
@@ -270,7 +256,6 @@ class MusicPlayerService with ChangeNotifier {
       await player.play();
       notifyListeners();
     } catch (e) {
-      print('Error during play: $e');
     }
   }
 

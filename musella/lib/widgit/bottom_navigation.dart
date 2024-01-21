@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatelessWidget {
   final void Function(int) onItemSelected;
+  // ignore: use_key_in_widget_constructors
   const BottomNavigation({Key? key, required this.onItemSelected});
 
   @override

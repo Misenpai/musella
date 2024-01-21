@@ -16,6 +16,7 @@ class AlbumSongPage extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _AlbumSongPageState createState() => _AlbumSongPageState();
 }
 
@@ -35,9 +36,6 @@ class _AlbumSongPageState extends State<AlbumSongPage> {
 
       final loadedSongs =
           await songsOperations.getSongsAlbumModel([widget.albumName]);
-      print("ALbum loadedSongs  is : $loadedSongs");
-
-      print("name is : ${widget.albumName}");
 
       if (mounted) {
         setState(() {

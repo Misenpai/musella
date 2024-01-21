@@ -10,6 +10,7 @@ class ArtistPage extends StatefulWidget {
   const ArtistPage({super.key, required this.handleBackFromArtistSongPlayer});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ArtistPageState createState() => _ArtistPageState();
 }
 
@@ -28,6 +29,7 @@ class _ArtistPageState extends State<ArtistPage> {
   }
 
   void filterArtists(String query) {
+    // ignore: prefer_collection_literals
     Set<String> uniqueArtists = Set<String>();
 
     setState(() {

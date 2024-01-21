@@ -5,6 +5,7 @@ import 'package:musella/models/playlist_play.dart';
 class PlaylistUserOperations {
   PlaylistUserOperations._();
 
+  // ignore: prefer_final_fields
   static List<PlaylistPlayModel> _songList = [];
 
   static Future<void> addSongDetails(

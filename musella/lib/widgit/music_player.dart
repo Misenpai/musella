@@ -1,35 +1,15 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 
-import 'package:musella/models/playlist_play.dart';
-import 'package:musella/models/songs_model.dart';
 import 'package:musella/playlist/playlist_operation.dart';
 
 import 'package:musella/services/music_player_sevice.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
+// ignore: must_be_immutable, use_key_in_widget_constructors
 class MusicPlayerPage extends StatefulWidget {
-  // String? imageURL;
-  // String? title;
-  // String? artist;
-  // String? audioURL;
-  // final List<SongsModel>? albumSongs;
-  // final List<PlaylistPlayModel>? playlistSongs;
-  // int? currentSongIndex;
-
-  // MusicPlayerPage({
-  //   super.key,
-  //   this.imageURL,
-  //   this.title,
-  //   this.artist,
-  //   this.audioURL,
-  //   this.albumSongs,
-  //   this.playlistSongs,
-  //   this.currentSongIndex,
-  // });
-
   @override
+  // ignore: library_private_types_in_public_api
   _MusicPlayerPageState createState() => _MusicPlayerPageState();
 }
 
