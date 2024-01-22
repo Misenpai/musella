@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musella/models/songs_model.dart';
+import 'package:musella/playlist/playlist_operation.dart';
 import 'package:musella/services/music_player_sevice.dart';
 import 'package:musella/services/songs_model_operations.dart';
 import 'package:musella/widgit/music_player.dart';
@@ -39,7 +40,6 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
       final loadedSongs =
           await songsOperations.getSongsModel([widget.artistName]);
 
-
       if (mounted) {
         setState(() {
           songs = loadedSongs;
@@ -76,31 +76,52 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
                   leading: Image.network(song.imageURL),
                   title: Text(song.title),
                   subtitle: Text('${song.artist} | ${song.duration}'),
-                  trailing: IconButton(
-                    icon: Icon(Icons.play_circle_fill, color: Colors.orange),
-                    onPressed: () {
-                      final songIndex = index;
-                      widget.handleBackFromArtistSongPlayer(
-                        song.imageURL,
-                        song.title,
-                        song.artist,
-                      );
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                              icon: Icon(
+                                Icons.add,
+                                color: Colors.orange,
+                              ),
+                              onPressed: () {
+                                PlaylistOperations.showAddToPlaylistDialog(
+                                  context,
+                                  song.imageURL,
+                                  song.title,
+                                  song.artist,
+                                  song.audioURL,
+                                );
+                              },
+                            ),
+                      IconButton(
+                        icon:
+                            Icon(Icons.play_circle_fill, color: Colors.orange),
+                        onPressed: () {
+                          final songIndex = index;
+                          widget.handleBackFromArtistSongPlayer(
+                            song.imageURL,
+                            song.title,
+                            song.artist,
+                          );
 
-                      musicPlayerService.updateCurrentSong(
-                        imageURL: song.imageURL,
-                        title: song.title,
-                        artist: song.artist,
-                        audioURL: song.audioURL,
-                        albumSongs: songs,
-                        songIndex: songIndex,
-                      );
-                      musicPlayerService.initializeMusic();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => MusicPlayerPage(),
-                        ),
-                      );
-                    },
+                          musicPlayerService.updateCurrentSong(
+                            imageURL: song.imageURL,
+                            title: song.title,
+                            artist: song.artist,
+                            audioURL: song.audioURL,
+                            albumSongs: songs,
+                            songIndex: songIndex,
+                          );
+                          musicPlayerService.initializeMusic();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => MusicPlayerPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 );
               },

@@ -105,6 +105,8 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
                           song.artist,
                         );
 
+                        print("widget items countis : ${widget.items}");
+
                         musicPlayerService.updateCurrentSong(
                           imageURL: song.imagePath,
                           title: song.title,

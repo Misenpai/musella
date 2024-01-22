@@ -13,7 +13,6 @@ class MusicPlayerService with ChangeNotifier {
   final AudioPlayer player = AudioPlayer();
   Duration? duration;
   Duration positions = Duration.zero;
-  late final StreamSubscription playerStateChangedSubscription;
   int currentAlbumSongIndex = 0;
   int currentPlaylistSongIndex = 0;
   List<SongsModel>? albumSongtemp;
@@ -47,16 +46,6 @@ class MusicPlayerService with ChangeNotifier {
     playlistSong = playlistSongs;
     currentSongIndex = songIndex;
     notifyListeners();
-  }
-
-  void initState() {
-    initializeMusic();
-    playerStateChangedSubscription = player.playerStateStream.listen((state) {
-      if (state.processingState == ProcessingState.completed) {
-        initializeMusic();
-        playNextSong();
-      }
-    });
   }
 
   Future<void> initializeMusic() async {
@@ -101,62 +90,88 @@ class MusicPlayerService with ChangeNotifier {
   }
 
   Future<void> playNextSong() async {
+    print("is shuffling value : $isShuffling");
     if (isShuffling) {
       try {
         List<dynamic> shuffledSongs = [];
         if (albumSongtemp != null) {
           shuffledSongs.addAll(albumSongtemp!);
-        } else if (playlistSongtemp != null) {
-          shuffledSongs.addAll(playlistSongtemp!);
-        }
+          shuffledSongs.shuffle();
 
-        shuffledSongs.shuffle();
+          int currentIndex = shuffledSongs.indexWhere((song) =>
+              song.audioURL == currentAudioURL &&
+              song.imageURL == currentImageURL &&
+              song.title == currentTitle &&
+              song.artist == currentArtist);
 
+          if (currentIndex == -1) {
+            return;
+          }
 
-        int currentIndex = shuffledSongs.indexWhere((song) =>
-            (song is SongsModel &&
-                song.audioURL == currentAudioURL &&
-                song.imageURL == currentImageURL &&
-                song.title == currentTitle &&
-                song.artist == currentArtist) ||
-            (song is PlaylistPlayModel &&
-                song.audioURL == currentAudioURL &&
-                song.imagePath == currentImageURL &&
-                song.title == currentTitle &&
-                song.artist == currentArtist));
+          int nextIndex = (currentIndex + 1) % shuffledSongs.length;
 
+          var nextSong = shuffledSongs[nextIndex];
 
-        if (currentIndex == -1) {
-          return;
-        }
+          currentImageURL = nextSong.imageURL;
+          currentTitle = nextSong.title;
+          currentArtist = nextSong.artist;
+          currentAudioURL = nextSong.audioURL;
 
-        int nextIndex = (currentIndex + 1) % shuffledSongs.length;
-
-        var nextSong = shuffledSongs[nextIndex];
-        if (nextSong is SongsModel) {
           updateCurrentSong(
-            imageURL: nextSong.imageURL,
-            title: nextSong.title,
-            artist: nextSong.artist,
-            audioURL: nextSong.audioURL,
+            imageURL: currentImageURL,
+            title: currentTitle,
+            artist: currentArtist,
+            audioURL: currentAudioURL,
             albumSongs: albumSongtemp,
             songIndex: nextIndex,
           );
-        } else if (nextSong is PlaylistPlayModel) {
+          MusicOperations.addMusic(
+            currentImageURL ?? '',
+            currentTitle ?? '',
+            currentArtist ?? '',
+            currentAudioURL ?? '',
+          );
+          await fetchAndPlaySong(nextSong.audioURL);
+        } else if (playlistSongtemp != null) {
+          shuffledSongs.addAll(playlistSongtemp!);
+          shuffledSongs.shuffle();
+
+          int currentIndex = shuffledSongs.indexWhere((song) =>
+              song.audioURL == currentAudioURL &&
+              song.imagePath == currentImageURL &&
+              song.title == currentTitle &&
+              song.artist == currentArtist);
+
+          if (currentIndex == -1) {
+            return;
+          }
+
+          int nextIndex = (currentIndex + 1) % shuffledSongs.length;
+
+          var nextSong = shuffledSongs[nextIndex];
+
+          currentImageURL = nextSong.imagePath;
+          currentTitle = nextSong.title;
+          currentArtist = nextSong.artist;
+          currentAudioURL = nextSong.audioURL;
+
           updateCurrentSong(
-            imageURL: nextSong.imagePath,
-            title: nextSong.title,
-            artist: nextSong.artist,
-            audioURL: nextSong.audioURL,
+            imageURL: currentImageURL,
+            title: currentTitle,
+            artist: currentArtist,
+            audioURL: currentAudioURL,
             playlistSongs: playlistSongtemp,
             songIndex: nextIndex,
           );
+          MusicOperations.addMusic(
+            currentImageURL ?? '',
+            currentTitle ?? '',
+            currentArtist ?? '',
+            currentAudioURL ?? '',
+          );
+          await fetchAndPlaySong(nextSong.audioURL);
         }
-
-        await initializeMusic();
-        await fetchAndPlaySong(currentAudioURL);
-      } catch (e) {
-      }
+      } catch (e) {}
     } else {
       if (albumSongtemp != null &&
           currentAlbumSongIndex < albumSongtemp!.length - 1) {
@@ -166,6 +181,7 @@ class MusicPlayerService with ChangeNotifier {
         currentTitle = nextSong.title;
         currentArtist = nextSong.artist;
         currentAudioURL = nextSong.audioURL;
+        currentSongIndex = currentAlbumSongIndex;
         updateCurrentSong(
           imageURL: nextSong.imageURL,
           title: nextSong.title,
@@ -174,15 +190,19 @@ class MusicPlayerService with ChangeNotifier {
           albumSongs: albumSongtemp,
           songIndex: currentAlbumSongIndex,
         );
-        await initializeMusic();
+        MusicOperations.addMusic(
+          nextSong.imageURL,
+          nextSong.title,
+          nextSong.artist,
+          nextSong.audioURL,
+        );
         await fetchAndPlaySong(nextSong.audioURL);
       }
       if (playlistSongtemp != null &&
           currentPlaylistSongIndex < playlistSongtemp!.length - 1) {
-        int nextIndex = currentPlaylistSongIndex + 1;
-        PlaylistPlayModel nextSong = playlistSongtemp![nextIndex];
-
-        currentPlaylistSongIndex = nextIndex;
+        currentPlaylistSongIndex++;
+        PlaylistPlayModel nextSong =
+            playlistSongtemp![currentPlaylistSongIndex];
         currentImageURL = nextSong.imagePath;
         currentTitle = nextSong.title;
         currentArtist = nextSong.artist;
@@ -194,9 +214,14 @@ class MusicPlayerService with ChangeNotifier {
           artist: nextSong.artist,
           audioURL: nextSong.audioURL,
           playlistSongs: playlistSongtemp,
-          songIndex: nextIndex,
+          songIndex: currentPlaylistSongIndex,
         );
-        await initializeMusic();
+        MusicOperations.addMusic(
+          nextSong.imagePath,
+          nextSong.title,
+          nextSong.artist,
+          nextSong.audioURL,
+        );
         await fetchAndPlaySong(nextSong.audioURL);
       }
     }
@@ -220,7 +245,12 @@ class MusicPlayerService with ChangeNotifier {
         albumSongs: albumSongtemp,
         songIndex: currentAlbumSongIndex,
       );
-      await initializeMusic();
+      MusicOperations.addMusic(
+        previousSong.imageURL,
+        previousSong.title,
+        previousSong.artist,
+        previousSong.audioURL,
+      );
       await fetchAndPlaySong(previousSong.audioURL);
     } else if (playlistSongtemp != null && currentPlaylistSongIndex > 0) {
       currentPlaylistSongIndex--;
@@ -240,7 +270,12 @@ class MusicPlayerService with ChangeNotifier {
         playlistSongs: playlistSongtemp,
         songIndex: currentPlaylistSongIndex,
       );
-      await initializeMusic();
+      MusicOperations.addMusic(
+        previousSong.imagePath,
+        previousSong.title,
+        previousSong.artist,
+        previousSong.audioURL,
+      );
       await fetchAndPlaySong(previousSong.audioURL);
     }
   }
@@ -255,8 +290,7 @@ class MusicPlayerService with ChangeNotifier {
       await player.setUrl(url);
       await player.play();
       notifyListeners();
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Future<void> togglePlayPause() async {
@@ -266,12 +300,5 @@ class MusicPlayerService with ChangeNotifier {
       player.play();
     }
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    player.dispose();
-    playerStateChangedSubscription.cancel();
-    super.dispose();
   }
 }

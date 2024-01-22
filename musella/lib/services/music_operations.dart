@@ -34,7 +34,6 @@ class MusicOperations {
   static final List<Music> _musicList = [];
 
   static List<Music> getMusicList() {
-    // Create a copy of the music list to avoid direct manipulation
     List<Music> result = List.from(_musicList);
     return result;
   }

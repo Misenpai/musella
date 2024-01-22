@@ -105,7 +105,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
             child: ListTile(
               leading: firstSong != null
                   ? Image.network(firstSong.imagePath)
-                  : CircleAvatar(), // Use CircleAvatar if no song is present
+                  : CircleAvatar(),
               title: Text(playlist.name),
               subtitle: Text('${playlist.songs.length} songs'),
               onTap: () {

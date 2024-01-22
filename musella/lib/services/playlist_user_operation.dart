@@ -9,12 +9,12 @@ class PlaylistUserOperations {
   static List<PlaylistPlayModel> _songList = [];
 
   static Future<void> addSongDetails(
-    String imagePath,
+    String imageURL,
     String title,
     String artistname,
     String audioURL,
   ) async {
-    final song = PlaylistPlayModel(imagePath, title, artistname, audioURL);
+    final song = PlaylistPlayModel(imageURL, title, artistname, audioURL);
     _songList.insert(0, song);
     await _saveToPrefs();
   }

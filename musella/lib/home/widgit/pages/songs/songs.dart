@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musella/models/songs_model.dart';
+import 'package:musella/playlist/playlist_operation.dart';
 import 'package:musella/services/music_player_sevice.dart';
 import 'package:musella/services/songs_model_operations.dart';
 import 'package:musella/widgit/music_player.dart';
@@ -59,7 +60,6 @@ class _SongsPageState extends State<SongsPage> {
   @override
   void dispose() {
     _searchFocusNode.dispose();
-
     super.dispose();
   }
 
@@ -147,31 +147,52 @@ class _SongsPageState extends State<SongsPage> {
                         leading: Image.network(song.imageURL),
                         title: Text(song.title),
                         subtitle: Text('${song.artist} | ${song.duration}'),
-                        trailing: IconButton(
-                          icon: Icon(
-                            Icons.play_circle_fill,
-                            color: Colors.orange,
-                          ),
-                          onPressed: () {
-                            widget.handleBackFromMusicPlayer(
-                              song.imageURL,
-                              song.title,
-                              song.artist,
-                            );
-
-                            musicPlayerService.updateCurrentSong(
-                              imageURL: song.imageURL,
-                              title: song.title,
-                              artist: song.artist,
-                              audioURL: song.audioURL,
-                            );
-                            musicPlayerService.initializeMusic();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => MusicPlayerPage(),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                Icons.add,
+                                color: Colors.orange,
                               ),
-                            );
-                          },
+                              onPressed: () {
+                                PlaylistOperations.showAddToPlaylistDialog(
+                                  context,
+                                  song.imageURL,
+                                  song.title,
+                                  song.artist,
+                                  song.audioURL,
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.play_circle_fill,
+                                color: Colors.orange,
+                              ),
+                              onPressed: () {
+                                widget.handleBackFromMusicPlayer(
+                                  song.imageURL,
+                                  song.title,
+                                  song.artist,
+                                );
+
+                                musicPlayerService.updateCurrentSong(
+                                  imageURL: song.imageURL,
+                                  title: song.title,
+                                  artist: song.artist,
+                                  audioURL: song.audioURL,
+                                  songIndex: index,
+                                );
+                                musicPlayerService.initializeMusic();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => MusicPlayerPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       );
                     },
