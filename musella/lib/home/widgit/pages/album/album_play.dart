@@ -109,9 +109,9 @@ class _AlbumSongPageState extends State<AlbumSongPage> {
                             artist: song.artist,
                             audioURL: song.audioURL,
                             albumSongs: songs,
-                            songIndex: songIndex,
+                            songIndexAlbum: songIndex,
                           );
-                          musicPlayerService.initializeMusic();
+                          musicPlayerService.initState();
 
                           Navigator.of(context).push(
                             MaterialPageRoute(

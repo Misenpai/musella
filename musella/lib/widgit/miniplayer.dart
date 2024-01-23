@@ -105,12 +105,24 @@ class MiniPlayer extends StatelessWidget {
                 stream: musicPlayerService.player.positionStream,
                 builder: (context, snapshot) {
                   Duration currentPosition = snapshot.data ?? Duration.zero;
+                  Duration totalDuration =
+                      musicPlayerService.duration ?? const Duration(minutes: 4);
+
+                  if (currentPosition.inSeconds + 1 >=
+                          totalDuration.inSeconds &&
+                      !musicPlayerService.endOfSongReached) {
+                    musicPlayerService.endOfSongReached = true;
+                    musicPlayerService.playNextSong();
+                  }
+                  if (currentPosition.inSeconds == 0) {
+                    musicPlayerService.endOfSongReached = false;
+                  }
+
                   return Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     child: ProgressBar(
                       progress: currentPosition,
-                      total: musicPlayerService.duration ??
-                          const Duration(minutes: 4),
+                      total: totalDuration,
                       onSeek: (duration) {
                         musicPlayerService.player.seek(duration);
                       },

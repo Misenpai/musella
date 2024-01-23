@@ -182,9 +182,9 @@ class _SongsPageState extends State<SongsPage> {
                                   title: song.title,
                                   artist: song.artist,
                                   audioURL: song.audioURL,
-                                  songIndex: index,
+                                  songIndexAlbum: index,
                                 );
-                                musicPlayerService.initializeMusic();
+                                musicPlayerService.initState();
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => MusicPlayerPage(),

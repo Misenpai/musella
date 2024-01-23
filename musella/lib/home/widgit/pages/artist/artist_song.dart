@@ -111,7 +111,7 @@ class _ArtistSongPageState extends State<ArtistSongPage> {
                             artist: song.artist,
                             audioURL: song.audioURL,
                             albumSongs: songs,
-                            songIndex: songIndex,
+                            songIndexAlbum: songIndex,
                           );
                           musicPlayerService.initializeMusic();
                           Navigator.of(context).push(

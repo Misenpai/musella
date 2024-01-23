@@ -65,9 +65,9 @@ class RecentlyPlayed extends StatelessWidget {
                             title: album.title,
                             artist: album.artist,
                             audioURL: album.audioURL,
-                            songIndex: songIndex,
+                            songIndexAlbum: songIndex,
                           );
-                          musicPlayerService.initializeMusic();
+                          musicPlayerService.initState();
 
                           Navigator.of(context).push(
                             MaterialPageRoute(

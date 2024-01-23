@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:musella/api/credential.dart';
 import 'package:musella/models/playlist_play.dart';
 import 'package:musella/models/songs_model.dart';
 import 'package:musella/services/music_operations.dart';
@@ -18,6 +19,7 @@ class MusicPlayerService with ChangeNotifier {
   List<SongsModel>? albumSongtemp;
   List<PlaylistPlayModel>? playlistSongtemp;
   bool isShuffling = false;
+  bool endOfSongReached = false;
 
   String? currentImageURL;
   String? currentTitle;
@@ -25,34 +27,39 @@ class MusicPlayerService with ChangeNotifier {
   String? currentAudioURL;
   List<SongsModel>? albumSong;
   List<PlaylistPlayModel>? playlistSong;
-  int? currentSongIndex;
+  // int? currentSongIndexAlbum;
+  // int? currentSongIndexPlaylist;
 
   bool get isPlaying => player.playing;
 
-  void updateCurrentSong({
+  Future<void> updateCurrentSong({
     String? imageURL,
     String? title,
     String? artist,
     String? audioURL,
     List<SongsModel>? albumSongs,
     List<PlaylistPlayModel>? playlistSongs,
-    int? songIndex,
-  }) {
+    int songIndexAlbum = 0,
+    int songIndexPlaylist = 0,
+  }) async {
     currentImageURL = imageURL;
     currentTitle = title;
     currentArtist = artist;
     currentAudioURL = audioURL;
     albumSong = albumSongs;
     playlistSong = playlistSongs;
-    currentSongIndex = songIndex;
+    currentAlbumSongIndex = songIndexAlbum;
+    currentPlaylistSongIndex = songIndexPlaylist;
     notifyListeners();
   }
 
-  Future<void> initializeMusic() async {
-    currentAlbumSongIndex = currentSongIndex!;
-    currentPlaylistSongIndex = currentSongIndex!;
+  void initState() {
     albumSongtemp = albumSong;
     playlistSongtemp = playlistSong;
+    initializeMusic();
+  }
+
+  Future<void> initializeMusic() async {
     MusicOperations.addMusic(
       currentImageURL ?? '',
       currentTitle ?? '',
@@ -65,7 +72,7 @@ class MusicPlayerService with ChangeNotifier {
   Future<void> fetchAndPlaySong(String? audioURL) async {
     if (currentAudioURL == null) return;
     final credentials = Spotify.SpotifyApiCredentials(
-        "4c6480b9dad641e0949b71b13d0ca7c0", "d07d2808092846ae9a452961db39b7f2");
+        SpotifyCredentials.clientId, SpotifyCredentials.clientSecret);
     final spotify = Spotify.SpotifyApi(credentials);
     final yt = YoutubeExplode();
     try {
@@ -80,9 +87,9 @@ class MusicPlayerService with ChangeNotifier {
         var audioId = manifest.audioOnly.first.url;
         await play(audioId.toString());
         notifyListeners();
-        await player.playerStateStream.firstWhere((position) =>
-            position.processingState == ProcessingState.completed);
-        await playNextSong();
+        player.playerStateStream.listen((position) {
+          positions = player.position;
+        });
       }
     } finally {
       yt.close();
@@ -90,7 +97,6 @@ class MusicPlayerService with ChangeNotifier {
   }
 
   Future<void> playNextSong() async {
-    print("is shuffling value : $isShuffling");
     if (isShuffling) {
       try {
         List<dynamic> shuffledSongs = [];
@@ -123,7 +129,7 @@ class MusicPlayerService with ChangeNotifier {
             artist: currentArtist,
             audioURL: currentAudioURL,
             albumSongs: albumSongtemp,
-            songIndex: nextIndex,
+            songIndexAlbum: nextIndex,
           );
           MusicOperations.addMusic(
             currentImageURL ?? '',
@@ -161,7 +167,7 @@ class MusicPlayerService with ChangeNotifier {
             artist: currentArtist,
             audioURL: currentAudioURL,
             playlistSongs: playlistSongtemp,
-            songIndex: nextIndex,
+            songIndexPlaylist: nextIndex,
           );
           MusicOperations.addMusic(
             currentImageURL ?? '',
@@ -175,20 +181,19 @@ class MusicPlayerService with ChangeNotifier {
     } else {
       if (albumSongtemp != null &&
           currentAlbumSongIndex < albumSongtemp!.length - 1) {
-        currentAlbumSongIndex++;
+        currentAlbumSongIndex = currentAlbumSongIndex + 1;
         SongsModel nextSong = albumSongtemp![currentAlbumSongIndex];
         currentImageURL = nextSong.imageURL;
         currentTitle = nextSong.title;
         currentArtist = nextSong.artist;
         currentAudioURL = nextSong.audioURL;
-        currentSongIndex = currentAlbumSongIndex;
-        updateCurrentSong(
+        await updateCurrentSong(
           imageURL: nextSong.imageURL,
           title: nextSong.title,
           artist: nextSong.artist,
           audioURL: nextSong.audioURL,
           albumSongs: albumSongtemp,
-          songIndex: currentAlbumSongIndex,
+          songIndexAlbum: currentAlbumSongIndex,
         );
         MusicOperations.addMusic(
           nextSong.imageURL,
@@ -214,7 +219,7 @@ class MusicPlayerService with ChangeNotifier {
           artist: nextSong.artist,
           audioURL: nextSong.audioURL,
           playlistSongs: playlistSongtemp,
-          songIndex: currentPlaylistSongIndex,
+          songIndexPlaylist: currentPlaylistSongIndex,
         );
         MusicOperations.addMusic(
           nextSong.imagePath,
@@ -243,7 +248,7 @@ class MusicPlayerService with ChangeNotifier {
         artist: previousSong.artist,
         audioURL: previousSong.audioURL,
         albumSongs: albumSongtemp,
-        songIndex: currentAlbumSongIndex,
+        songIndexAlbum: currentAlbumSongIndex,
       );
       MusicOperations.addMusic(
         previousSong.imageURL,
@@ -268,7 +273,7 @@ class MusicPlayerService with ChangeNotifier {
         artist: previousSong.artist,
         audioURL: previousSong.audioURL,
         playlistSongs: playlistSongtemp,
-        songIndex: currentPlaylistSongIndex,
+        songIndexPlaylist: currentPlaylistSongIndex,
       );
       MusicOperations.addMusic(
         previousSong.imagePath,
@@ -300,5 +305,10 @@ class MusicPlayerService with ChangeNotifier {
       player.play();
     }
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

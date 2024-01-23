@@ -17,6 +17,7 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
   @override
   Widget build(BuildContext context) {
     final musicPlayerService = Provider.of<MusicPlayerService>(context);
+    // bool endOfSongReached = false;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -87,6 +88,17 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
             stream: musicPlayerService.player.positionStream,
             builder: (context, snapshot) {
               Duration currentPosition = snapshot.data ?? Duration.zero;
+              Duration totalDuration =
+                  musicPlayerService.duration ?? const Duration(minutes: 4);
+
+              if (currentPosition.inSeconds + 1 >= totalDuration.inSeconds &&
+                  !musicPlayerService.endOfSongReached) {
+                musicPlayerService.endOfSongReached = true;
+                musicPlayerService.playNextSong();
+              }
+              if (currentPosition.inSeconds == 0) {
+                musicPlayerService.endOfSongReached = false;
+              }
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: ProgressBar(

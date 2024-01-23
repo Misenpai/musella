@@ -49,6 +49,7 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
             itemBuilder: (context, index) {
               if (index == widget.items.length && widget.songToAdd != null) {
                 final song = widget.songToAdd!.first;
+                // ignore: avoid_print
                 print("In Playlist song it is : ${song.title}");
               } else {
                 final song = widget.items[index];
@@ -105,7 +106,6 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
                           song.artist,
                         );
 
-                        print("widget items countis : ${widget.items}");
 
                         musicPlayerService.updateCurrentSong(
                           imageURL: song.imagePath,
@@ -113,9 +113,9 @@ class _PlaylistDetailPageState extends State<PlaylistDetailPage>
                           artist: song.artist,
                           audioURL: song.audioURL,
                           playlistSongs: widget.items,
-                          songIndex: songIndex,
+                          songIndexPlaylist: songIndex,
                         );
-                        musicPlayerService.initializeMusic();
+                        musicPlayerService.initState();
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => MusicPlayerPage(),
